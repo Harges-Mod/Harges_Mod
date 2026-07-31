@@ -1,0 +1,155 @@
+{
+  "CustomText": {
+    "WelcomeMessage": "Welcome to {WorldName}!"
+  },
+  
+  "ItemName": {
+    "ExampleItem": "Example Item",
+    "ExampleMeleeWeapon": "Sword",
+    "ExampleSwingingEnergySword": "Swinging Energy Sword",
+    "ExampleSpear": "Spear",
+    "ExampleFlail": "Flail",
+    "ExampleYoyo": "Yoyo",
+    "ExampleWhip": "Whip",
+    "ExampleMagicWeapon": "Magic Book",
+    "ExampleLaserWeapon": "Laser Weapon",
+    "ExampleGun": "Gun",
+    "ExampleShotgun": "Shotgun",
+    "ExampleRocketLauncher": "Rocket Launcher",
+    "ExampleMinionItem": "Minion Staff",
+    "ExampleSentryItem": "Example Sentry Item",
+    "ExampleStatAccessory": "Stat Accessory",
+    "ExampleBeard": "Beard",
+    "WaspNest": "Wasp Nest",
+    "ExampleBoots": "Boots",
+    "ExampleHelmet": "Helmet",
+    "ExampleBreastplate": "Breastplate",
+    "ExampleLeggings": "Leggings",
+    "ExampleWings": "Wings",
+    "ExampleSoul": "Soul",
+    "ExamplePickaxe": "Pickaxe",
+    "ExampleHamaxe": "Hamaxe",
+    "ExampleDrill": "Drill",
+    "ExampleFishingRod": "Fishing Rod",
+    "ExampleQuestFish": "Quest Fish",
+    "ExampleBullet": "Bullet",
+    "ExampleBuffPotion": "Buff Potion",
+    "ExamplePetItem": "Little Airplane",
+    "ExampleLightPetItem": "Bubble",
+    "ExampleMinecart": "Minecart",
+    "ExampleMountItem": "Mount",
+    "ExampleBossSummonItem": "Eye of ???",
+    "ExampleBossMask": "Mask of ???",
+    "ExampleBossBag": "Treasure Bag (???)",
+    "ExampleShield": "Shield",
+    "ExampleGolfBall": "Golf Ball"
+  },
+  
+  "ItemTooltip": {
+    "ExampleItem": "item description",
+    "ExampleSentryItem": "Summons an example sentry to fight for you",
+    "ExampleStatAccessory": "{0}% increased damage",
+    "ExamplePetItem": "It's made of paper!",
+    "ExampleLightPetItem": "A bubble.",
+    "ExampleBossSummonItem": "???",
+    "ExampleBoots": "Allows flight, super fast running, even faster running on sand, and extra mobility on ice\nProvides the ability to walk on water, honey, lava, and shimmer\nGrants immunity to fire blocks and {0} seconds of immunity to lava\nReduces damage from touching lava\nPrevents fall damage\nLeaves a trail of flames in your wake",
+    "ExampleMountItem": "This summons a modded mount."
+  },
+  
+  "AnglerQuest": {
+    "ExampleQuestFish": "Item quest text"
+  },
+  
+  "ArmorSetBonus": {
+    "CommonExtraSpeed": "{0}% increased movement speed"
+  },
+  
+  "ProjectileName": {
+    "ExampleBulletProjectile": "Bullet",
+    "ExampleDrillProjectile": "Drill",
+    "ExampleYoyoProjectile": "Yoyo",
+    "ExampleBobber": "Bobber",
+    "ExamplePetProjectile": "Little Airplane",
+    "ExampleLightPetProjectile": "Bubble",
+    "ExampleAdvancedAnimatedProjectile": "Animated Projectile",
+    "ExampleWhipProjectile": "Whip",
+    "ExampleMinion": "Minion",
+    "ExampleSentry": "Sentry",
+    "ExampleSentryShot": "Sentry Shot",
+    "ExampleSwingingEnergySwordProjectile": "Swinging Energy Sword",
+    "ExampleSpearProjectile": "Spear",
+    "ExampleLaserBeam": "Laser",
+    "ExampleFlail": "Flail",
+    "ExampleGolfBall": "Golf Ball"
+  },
+  
+  "BuffName": {
+    "ExampleDefenseBuff": "Defense",
+    "ExampleDefenseDebuff": "Defense",
+    "ExamplePetBuff": "Little Airplane",
+    "ExampleLightPetBuff": "Bubble",
+    "ExampleMinionBuff": "Little Flame",
+    "ExampleMountBuff": "Example Mount"
+  },
+  
+  "BuffDescription": {
+    "ExampleDefenseBuff": "Increases the player's defense by {0}",
+    "ExampleDefenseDebuff": "Reduces the player's defense by {0}%",
+    "ExamplePetBuff": "It's made of paper!",
+    "ExampleLightPetBuff": "A bubble.",
+    "ExampleMinionBuff": "It emits a red light.",
+    "ExampleMountBuff": "Leather seats, 4 cup holders"
+  },
+  
+  "NPCName": {
+    "ExampleSlimeNPC": "Slime",
+    "ExampleBoss": "Eye of ???",
+    "SkullMan": "Skull Merchant"
+  },
+  
+"NPCChat": {
+  "SkullMan_1": "Hey there! Looking for a brand new yoyo to show off some cool tricks?",
+  "SkullMan_2": "You know, a good yoyo is nothing without the right parts. Need some premium strings or faster bearings?",
+  "SkullMan_3": "Awesome choice! This baby spins like a dream. Go give it a test run!",
+  "SkullMan_4": "Ah, looks like you're a bit short on coins. Come back when you've got enough!",
+  "SkullMan_5": "Keep practicing! Remember, it's all in the wrist."
+},
+
+  
+  "Bestiary": {
+    "ExampleSlimeNPC": "ExampleSlimeNPC Bestiary Text",
+    "ExampleBoss": "Eye of something",
+    "SkullMan": "Yoyo seller"
+  },
+  
+  "TownNPCMood": {
+    "SkullMan": {
+      "Content": "I am well thanks.",
+      "DislikeBiome": "I don't like {0}.",
+      "DislikeCrowded": "It's getting very crowded in here.",
+      "DislikeNPC": "I don't like {0}.",
+      "HateBiome": "I hate {0}.",
+      "HateCrowded": "There are a lot of people here.",
+      "HateNPC": "I hate {0}.",
+      "LikeBiome": "I like {0}.",
+      "LikeNPC": "I like {0}.",
+      "LoveBiome": "I really like {0}.",
+      "LoveNPC": "I really like {0}.",
+      "LoveSpace": "I like it here.",
+      "NoHome": "I need a house.",
+      "FarFromHome": "I'm a long way from home.",
+      "ExampleSpecialMoodText": "I don't like selling products overnight."
+    }
+  },
+  
+  "Achievements": {
+      "ExampleBossKilled": {
+          "Name": "Example Boss Killed",
+          "Description": "Defeat Example Boss"
+      },
+      "ManyWormsKilled": {
+          "Name": "Many Worms Killed",
+          "Description": "Defeat 5 Giant Worm"
+      }
+  }
+}

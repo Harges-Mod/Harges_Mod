@@ -1,0 +1,154 @@
+{
+  "CustomText": {
+    "WelcomeMessage": "Bem-vindo(a) a {WorldName}!"
+  },
+  
+  "ItemName": {
+    "SupremeRuby": "Rubi Supremo",
+    "AriesCry": "Grito de Áries",
+    "ExampleItem": "Exemplo de Item",
+    "ExampleMeleeWeapon": "Espada",
+    "ExampleSwingingEnergySword": "Espada de Energia Oscilante",
+    "ExampleSpear": "Lança",
+    "ExampleFlail": "Mangual",
+    "ExampleYoyo": "Ioiô",
+    "ExampleWhip": "Chicote",
+    "ExampleMagicWeapon": "Livro Mágico",
+    "ExampleLaserWeapon": "Arma Laser",
+    "ExampleGun": "Arma",
+    "ExampleShotgun": "Espingarda",
+    "ExampleRocketLauncher": "Lança-Foguetes",
+    "ExampleMinionItem": "Cajado de Invocação",
+    "ExampleSentryItem": "Sentinela",
+    "ExampleStatAccessory": "Acessório de Estatísticas",
+    "ExampleBeard": "Barba",
+    "WaspNest": "Ninho de Vespas",
+    "ExampleBoots": "Botas",
+    "ExampleHelmet": "Capacete",
+    "ExampleBreastplate": "Peitoral",
+    "ExampleLeggings": "Calças",
+    "ExampleWings": "Asas",
+    "ExampleSoul": "Alma",
+    "ExamplePickaxe": "Picareta",
+    "ExampleHamaxe": "Machado-Picareta",
+    "ExampleDrill": "Furadeira",
+    "ExampleFishingRod": "Vara de Pesca",
+    "ExampleQuestFish": "Peixe de Missão",
+    "ExampleBullet": "Munição",
+    "ExampleBuffPotion": "Poção de Buff",
+    "ExamplePetItem": "Aviãozinho",
+    "ExampleLightPetItem": "Bolha",
+    "ExampleMinecart": "Carrinho",
+    "ExampleMountItem": "Montaria",
+    "ExampleBossSummonItem": "Olho de ???",
+    "ExampleBossMask": "Máscara de ???",
+    "ExampleBossBag": "Bolsa do Tesouro (???)",
+    "ExampleShield": "Escudo",
+    "ExampleGolfBall": "Bola de Golfe"
+  },
+  
+  "ItemTooltip": {
+    "SupremeRuby": "Descrição",
+    "ExampleItem": "descrição do item",
+    "ExampleSentryItem": "Invoca uma sentinela",
+    "ExampleStatAccessory": "{0}% de aumento nos danos",
+    "ExamplePetItem": "É feito de papel!",
+    "ExampleLightPetItem": "Uma bolha.",
+    "ExampleBossSummonItem": "???",
+    "ExampleBoots": "Permite voar, correr super rápido, correr ainda mais rápido na areia e ter mobilidade extra no gelo\nProporciona a habilidade de andar sobre água, mel, lava e brilho\nConcede imunidade a blocos de fogo e {0} segundos de imunidade à lava\nReduz o dano causado pelo contato com lava\nPrevine dano por queda\nDeixa um rastro de chamas por onde você passar",
+    "ExampleMountItem": "Invoca uma montaria"
+  },
+  
+  "AnglerQuest": {
+    "ExampleQuestFish": "Texto de missão do item"
+  },
+  
+  "ArmorSetBonus": {
+    "CommonExtraSpeed": "{0}% de aumento na velocidade dos movimentos"
+  },
+  
+  "ProjectileName": {
+    "ExampleBulletProjectile": "Munição",
+    "ExampleDrillProjectile": "Furadeira",
+    "ExampleYoyoProjectile": "Ioiô",
+    "ExampleBobber": "Bóia",
+    "ExamplePetProjectile": "Aviãozinho",
+    "ExampleLightPetProjectile": "Bolha",
+    "ExampleAdvancedAnimatedProjectile": "Projétil Animado",
+    "ExampleWhipProjectile": "Chicote",
+    "ExampleMinion": "Minion",
+    "ExampleSentry": "Sentinela",
+    "ExampleSentryShot": "Disparo de Sentinela",
+    "ExampleSwingingEnergySwordProjectile": "Espada de Energia Oscilante",
+    "ExampleSpearProjectile": "Lança",
+    "ExampleLaserBeam": "Laser",
+    "ExampleFlail": "Mangual",
+    "ExampleGolfBall": "Bola de Golfe"
+  },
+  
+  "BuffName": {
+    "ExampleDefenseBuff": "Defesa",
+    "ExampleDefenseDebuff": "Defesa",
+    "ExamplePetBuff": "Aviãozinho",
+    "ExampleLightPetBuff": "Bolha",
+    "ExampleMinionBuff": "Foguinho",
+    "ExampleMountBuff": "Exemplo de Montaria"
+  },
+  
+  "BuffDescription": {
+    "ExampleDefenseBuff": "Aumenta a defesa do jogador em {0}",
+    "ExampleDefenseDebuff": "Reduz a defesa do jogador em {0}%",
+    "ExamplePetBuff": "É feito de papel!",
+    "ExampleLightPetBuff": "Uma bolha.",
+    "ExampleMinionBuff": "Emite uma luz vermelha.",
+    "ExampleMountBuff": "Bancos de couro, 4 porta-copos"
+  },
+  
+  "NPCName": {
+    "ExampleSlimeNPC": "Geleia",
+    "ExampleBoss": "Olho de ???",
+    "SkullMan": "Pessoa"
+  },
+  
+  "NPCChat": {
+    "SkullMan_1": "Olá, como vai?",
+    "SkullMan_2": "Olá!"
+  },
+
+  "Bestiary": {
+    "ExampleSlimeNPC": "Texto da Geleia para o bestiário",
+    "ExampleBoss": "Um olho de alguma coisa",
+    "SkullMan": "Texto de Pessoa para o bestiário"
+  },
+  
+  "TownNPCMood": {
+    "SkullMan": {
+      "Content": "Estou bem, obrigado.",
+      "DislikeBiome": "Não gosto de {0}.",
+      "DislikeCrowded": "Está ficando muito cheio aqui.",
+      "DislikeNPC": "Não gosto do {0}.",
+      "HateBiome": "Odeio {0}.",
+      "HateCrowded": "Tem muita gente aqui.",
+      "HateNPC": "Odeio o {0}.",
+      "LikeBiome": "Gosto de {0}.",
+      "LikeNPC": "Gosto de {0}.",
+      "LoveBiome": "Gosto muito de {0}.",
+      "LoveNPC": "Gosto muito de {0}.",
+      "LoveSpace": "Eu gosto daqui.",
+      "NoHome": "Preciso de uma casa.",
+      "FarFromHome": "Estou muito longe de casa.",
+      "ExampleSpecialMoodText": "Não gosto de vender produtos durante a noite."
+    }
+  },
+  
+  "Achievements": {
+      "ExampleBossKilled": {
+          "Name": "Example Boss Killed",
+          "Description": "Derrote o Chefe Exemplo"
+      },
+      "ManyWormsKilled": {
+          "Name": "Muitos Vermes",
+          "Description": "Derrote 5 Vermes Gigantes"
+      }
+  }
+}

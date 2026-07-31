@@ -1,148 +1,321 @@
-import { Terraria } from "./ModImports.js";
-import { ModHooks } from "./ModHooks.js";
-
-const { ProjectileID, BuffID, ItemID } = Terraria.ID;
+import { PlayerLoader } from './Loaders/PlayerLoader.js';
 
 export class ModPlayer {
     
-    static RegisteredPlayers = [];
-
-    constructor() {
-        this.player = null;
-        this.Lite = false
+    CumulativeHealth = 0;
+    CumulativeMana = 0;
+    Luck = 0;
+    ManaCost = 0;
+    WeaponDamage = 0;
+    WeaponKnockback = 0;
+    
+    constructor() {}
+    
+    OnEnterWorld(player) {
+        
+    }
+    
+    OnRespawn(player) {
+        
+    }
+    
+    SetupStartingItems(player, mediumCoreDeath) {
+        
+    }
+    
+    ResetEffects(player) {
+        
+    }
+    
+    UpdateDead(player) {
+        
+    }
+    
+    ModifyMaxStats(player) {
+        this.CumulativeHealth = 0;
+        this.CumulativeMana = 0;
+    }
+    
+    UpdateBadLifeRegen(player) {
+        
+    }
+    
+    UpdateLifeRegen(player) {
+        
+    }
+    
+    UpdateManaRegen(player) {
+        
+    }
+    
+    PreUpdate(player) {
+        
+    }
+    
+    PostUpdate(player) {
+        
+    }
+    
+    PreUpdateBuffs(player) {
+        
+    }
+    
+    PostUpdateBuffs(player) {
+        
+    }
+    
+    PreItemCheck(player) {
+        return true;
+    }
+    
+    PostItemCheck(player) {
+        
+    }
+    
+    CanUseItem(player, item) {
+        return true;
+    }
+    
+    CanAutoReuseItem(player, item) {
+        return true;
+    }
+    
+    ConsumeItem(player, item) {
+        return true;
+    }
+    
+    OnConsumeItem(player, item) {
+        
+    }
+    
+    UseTimeMultiplier(player, item) {
+        return 1.0;
+    }
+    
+    UseAnimationMultiplier(player, item) {
+        return 1.0;
+    }
+    
+    UseSpeedMultiplier(player, item) {
+        return 1.0;
+    }
+    
+    UseItem(player, item) {
+        return true;
+    }
+    
+    UseAnimation(player, item) {
+        
+    }
+    
+    GetHealLife(player, item, healValue) {
+        return healValue;
+    }
+    
+    GetHealMana(player, item, healValue) {
+        return healValue;
+    }
+    
+    OnMissingMana(player, item, neededMana) {
+        
+    }
+    
+    OnConsumeMana(player, item, manaConsumed) {
+        
+    }
+    
+    ModifyManaCost(player, item, mana) {
+        this.ManaCost = mana;
+    }
+    
+    ModifyWeaponDamage(player, item, damage) {
+        this.WeaponDamage = damage;
+    }
+    
+    // Called only if the item can shoot
+    ModifyWeaponKnockback(player, item, knockBack) {
+        this.WeaponKnockback = knockBack;
+    }
+    
+    PreModifyLuck(player, luck) {
+        return true;
+    }
+    
+    ModifyLuck(player, luck) {
+        this.Luck = luck;
+    }
+    
+    CanShoot(player, item) {
+        return true;
+    }
+    
+    // stats = { position, velocity, type, damage, knockBack, scale };
+    ModifyShootStats(player, stats) {
+        
+    }
+    
+    Shoot(player, item, position, velocity, type, damage, knockBack) {
+        return true;
+    }
+    
+    OnHitNPC(player, item, npc, damageDone, knockBack) {
+        
+    }
+    
+    
+    OnHitNPCWithProj(player, npc, projectile) {
+        
+    }
+    
+    UpdateInventory(player) {
+        
+    }
+    
+    UpdateEquips(player) {
+        
+    }
+    
+    UpdateAccessory(player, item, vanity, hideVisual) {
+        
+    }
+    
+    UpdateDyes(player) {
+        
+    }
+    
+    IsArmorSet(player, head, body, legs) {
+        return false;
+    }
+    
+    UpdateArmorSet(player) {
+        
+    }
+    
+    IsVanitySet(player, head, body, legs) {
+        return this.IsArmorSet(player, head, body, legs);
+    }
+    
+    UpdateVanitySet(player) {
+        
+    }
+    
+    UpdateCamera(player) {
+        
+    }
+    
+    UpdateMovement(player) {
+        
+    }
+    
+    WingMovement(player, item) {
+        
+    }
+    
+    CanPickup(player, item) {
+        return true;
+    }
+    
+    OnPickup(player, item) {
+        
+    }
+    
+    OnCraft(player, recipe) {
+        
+    }
+    
+    ExtractinatorUse(player, item, extractType, extractinatorBlockType) {
+        return true;
+    }
+    
+    ImmuneTo(player, damageSource, cooldownCounter, dodgeable) {
+        return false;
+    }
+    
+    FreeDodge(player, damageSource, damage, hitDirection, pvp, quiet, crit, cooldownCounter, dodgeable) {
+        return false;
+    }
+    
+    // modifiers = { damageSource, damage, hitDirection, quiet, crit, dodgeable };
+    ModifyHurt(player, modifiers) {
+        
+    }
+    
+    OnHurt(player, damageSource, damage, hitDirection, pvp, quiet, crit, cooldownCounter, dodgeable) {
+        
+    }
+    
+    PostHurt(player, damageSource, damage, hitDirection, pvp, quiet, crit, cooldownCounter, dodgeable) {
+        
+    }
+    
+    PreKill(player, damageSource, damage, hitDirection, pvp) {
+        
+    }
+    
+    Kill(player, damageSource, damage, hitDirection, pvp) {
+        
+    }
+    
+    GetDyeTraderReward(player, dyeTrader, rewardItems) {
+        
+    }
+    
+    AnglerQuestReward(player, angler, questItemType) {
+        return true;
+    }
+    
+    CanSellItem(player, npc, shopInventory, item) {
+        return true;
+    }
+    
+    PostSellItem(player, npc, shopInventory, item) {
+        
+    }
+    
+    CanCatchNPC(player, npc, item) {
+        return true;
+    }
+    
+    OnCatchNPC(player, npc, item, failed) {
+        
+    }
+    
+    CanReleaseNPC(player, npcType, item, x, y) {
+        return true;
+    }
+    
+    OnReleaseNPC(player, npc) {
+        
+    }
+    
+    ModifyCaughtFish(player, itemType) {
+        return itemType;
+    }
+    
+    /**
+     * @param {object} parts - {head, body, legs, includeArmor, hidesTopSkin, hidesBottomSkin}
+     * ex: parts.legs = false; // hide legs
+     */
+    ShouldDrawParts(player, parts) {
+        
+    }
+    
+    SendMessage(player, message) {
+        return true;
     }
     
     static register(player) {
-        this.RegisteredPlayers.push(new player());
-        ModHooks.initialize();
+        PlayerLoader.RegisteredPlayers.push(new player());
+    }
+    static getAll() {
+        return PlayerLoader?.RegisteredPlayers ?? [];
     }
     
-    PreUpdateEquips() {
-
-    }
-
-    PostUpdateEquips() {
-        
-    }
-
-    PreUpdate() {
-        
-    }
-
-    PostUpdate() {
-        
-    }
-
-    OnEnterWorld(player) {
-
-    }
-
-    ResetEffects() {
-
-    }
-
-    UpdateDead() {
-
-    }
-
-    UpdateBadLifeRegen() {
-
-    }
-
-    UpdateLifeRegen() {
-
-    }
-
-    OnHitAnything(x, y, victim) {
-
-    }
-
-    OnRespawn() {
-
-    }
-
-    CanShoot(item) {
-        return true;
-    }
-
-    UseSpeedMultiplier(item) {
-        return 1.0;
-    }
-
-    UseAnimationMultiplier(item) {
-        return 1.0;
-    }
-
-    UseTimeMultiplier(item) {
-        return 1.0;
-    }
-
-    CanUseItem(item) {
-        return true;
-    }
-
-    ModifyManaCost(item, mana) {
-
-    }
-
-    OnMissingMana(item, neededMana) {
-
-    }
-
-    OnConsumeMana(item, manaConsumed) {
-
-    }
-
-    PreModifyLuck(luck) {
-        return true;
-    }
-
-    ModifyLuck(luck) {
-
-    }
-
-    GetDyeTraderReward(rewardPool) {
-
-    }
-
-    AnglerQuestReward(rewardItems) {
-
-    }
-
-    GetHealLife(item, quickHeal, healValue) {
-
-    }
-
-    GetHealMana(item, quickHeal, healValue) {
-
-    }
-
-    PostItemCheck() {
-
-    }
-
-    UpdateDyes() {
-
-    }
-
-    Shoot(item, position, velocity, type, damage, knockback) {
-        return true;
-    }
-
-    OnHitNPC(item, target, damage, knockback, crit) {
-    }
-
-    OnHitNPCWithProj(proj, target) {
+    static Get(name) {
+        return PlayerLoader.getByName(name);
     }
     
-    PreKill(damage, hitDirection, pvp) {
-        return true;
-    }
-    
-    Kill(damage, hitDirection, pvp, damageSource) {
-    }
-
-    PreHurt(pvp, quiet, modifier) {
-        return true;
+    static getByName(name) {
+        return PlayerLoader.getByName(name);
     }
 }

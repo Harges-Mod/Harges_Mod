@@ -1,161 +1,189 @@
-import { ModLocalization } from "./ModLocalization.js";
-import { ModHooks } from "./ModHooks.js";
+import { Terraria } from './ModImports.js';
+import { ProjectileLoader } from './Loaders/ProjectileLoader.js';
+import { ModTexturedType } from './ModTexturedType.js';
+import { ModLocalization } from './ModLocalization.js';
 
-import { ModTexture } from "./ModTexture.js"
-import { ModTexturedType } from "./ModTexturedType.js"
-
-import { Terraria, Microsoft } from "./ModImports.js";
-import { ProjectileLoader } from "./Loaders/ProjectileLoader.js";
-
-
-export class ModProjectile extends ModTexturedType { 
-
+export class ModProjectile extends ModTexturedType {
     Projectile = undefined;
     Type = undefined;
-    AIType = undefined;
-    DrawHeldProjInFrontOfHeldItemAndArms = undefined;
-    DrawOffsetX = undefined;
-    DrawOriginOffsetY = undefined;
-    DrawOriginOffsetX = undefined;
-
+    
+    AIType = 0;
+    
     constructor() {
         super();
     }
-
-    SetStaticDefaults() {
-        if (this.Projectile.hostile) {
-            Terraria.Main.projHostile[this.Type] = true;
-        }
-
-        if (this.Projectile.aiStyle == 7) {
-            Terraria.Main.projHook[this.Type] = true;
-        }
-
-    }
-
-    SetDefaults() {
-
-    }
-
-    OnSpawnMod(source) {
-
-    }
-
-    PreAIMod() {
-        return true;
+    
+    SetupContent() {
+        let name = this.constructor.name;
+        let originalName = name, i = 1;
+        while (Terraria.ID.ProjectileID.Search.ContainsName(name)) name = originalName + i++;
+        Terraria.ID.ProjectileID.Search.Add(name, this.Type);
     }
     
-    OnHitPlayerMod(Projectile, target, damage, crit) {
+    SetStaticDefaults() { }
     
-    }
+    SetDefaults(proj) { }
     
-    AIMod(projectile) {
-    }
-
-    PostAIMod() {
-    }
-
-    ShouldUpdatePosition() {
-        return true;
-    }
-
-    TileCollideStyleMod(width, height, fallThrough, hitboxCenterFrac) {
-        return true;
-    }
-
-    OnTileCollideMod(oldVelocity) {
-        return true;
-    }
-
-    PreKillMod(timeLeft) {
-        return true;
-    }
-
-    KillMod(timeLeft) {
-
-    } 
-
-    CanDamage() {
-        return null;
-    }
+    PostStaticDefaults() { }
     
-    CanHitNPCMod(target) {
-        return null;
-    }
-
-    OnHitNPC(projectile, target, damage, knockback) {
-    }
-
-    CanHitPlayerMod(target) {
-        return true;
-    }
-    
-    Kill(proj, timeLeft) {    	
-
-    }
-
-    OnHitPlayerMod(target, damage, crit) {
-
-    }
-
-    CollidingMod(projHitbox, targetHibox) {
-        return null;
-    }
-
-    GetAlphaMod(lightColor) {
-        return null;
-    } 
-
-    PreDrawExtrasMod() {
-        return true;
-    }
-
-    PreDrawMod(projectile, lightColor) {
-        return true;
-    }
-
-    PostDrawMod(lightColor) {
-    }
-
-    static register(projectile) {
-        ProjectileLoader.register(projectile);
-    }
-
-    static isModType(type) {
-        return type >= ModProjectile.MAX_VANILLA_ID;
-    }
-
-    static isModProjectile(projectile) {
-        return ModProjectile.isModType(projectile.type);
-    }
-
-    static getModProjectile(type) {
-        return ProjectileLoader.getModProjectile(type);
-    }
-
-    static getByName(name) {
-        ProjectileLoader.getByName(name);
-    }
-
-    static getTypeByName(name) {
-        return ProjectileLoader.getTypeByName(name);
-    }
-
-    /*static InitializeProjectile(projectile) {
-        projectile.Projectile = {};
+    // Used to ensure that all projectiles have been initialized
+    PostSetupContent() {
         
-        const projectileName = projectile.constructor.name;
-
-        projectile.Type = projectile.Projectile.type = tl.projectile.registerNew(projectileName);
-
-        Terraria.Lang._projectileNameCache[projectile.Type] = ModLocalization.getTranslationProjectileName(projectileName);
-
-        const projectileTexture = new ModTexture(projectile.Texture);
-
-        if (projectileTexture.exists) {
-            Terraria.GameContent.TextureAssets.Projectile[projectile.Type] = projectileTexture.asset.asset;
+    }
+    
+    CloneDefaults(Type) {
+        if (Type > 0 && Type < ProjectileLoader.MAX_VANILLA_ID) {
+            const obj = Terraria.Projectile.new();
+            obj['void .ctor()']();
+            obj['void SetDefaults(int Type)'](Type);
+            for (const key of ProjectileLoader.ProjectileProperties) {
+                if (obj[key] === null) continue;
+                this.Projectile[key] = obj[key];
+            }
         }
+    }
+    
+    DefaultToSpear() {
+        this.Projectile.aiStyle = 19;
+        this.Projectile.friendly = true;
+        this.Projectile.penetrate = -1;
+        this.Projectile.tileCollide = false;
+        this.Projectile.drawLayer = 7;
+        this.Projectile.usesOwnerLight = true;
+        this.Projectile.ownerHitCheck = true;
+        this.Projectile.melee = true;
+    }
+    
+    DefaultToYoyo() {
+        this.Projectile.aiStyle = 99;
+        this.Projectile.drawLayer = 7;
+        this.Projectile.friendly = true;
+        this.Projectile.penetrate = -1;
+        this.Projectile.melee = true;
+    }
+    
+    DefaultToDrillOrChainsaw() {
+        this.Projectile.aiStyle = 20;
+        this.Projectile.friendly = true;
+        this.Projectile.penetrate = -1;
+        this.Projectile.tileCollide = false;
+        this.Projectile.drawLayer = 7;
+        this.Projectile.usesOwnerLight = true;
+        this.Projectile.ownerHitCheck = true;
+        this.Projectile.melee = true;
+    }
+    
+    DefaultToKite() {
+        this.Projectile.width = 4;
+        this.Projectile.height = 4;
+        this.Projectile.aiStyle = 160;
+        this.Projectile.penetrate = -1;
+        this.Projectile.extraUpdates = 60;
+    }
+    
+    DefaultToFlail() {
+        this.Projectile.aiStyle = 15;
+        this.Projectile.drawLayer = 7;
+        this.Projectile.friendly = true;
+        this.Projectile.penetrate = -1;
+        this.Projectile.melee = true;
+        this.Projectile.usesLocalNPCImmunity = true;
+        this.Projectile.localNPCHitCooldown = 10;
+    }
+    
+    DefaultToWhip() {
+        this.Projectile.width = 18;
+        this.Projectile.height = 18;
+        this.Projectile.aiStyle = 165;
+        this.Projectile.friendly = true;
+        this.Projectile.penetrate = -1;
+        this.Projectile.tileCollide = false;
+        this.Projectile.scale = 1.0;
+        this.Projectile.ownerHitCheck = true;
+        this.Projectile.extraUpdates = 1;
+        this.Projectile.usesLocalNPCImmunity = true;
+        this.Projectile.localNPCHitCooldown = -1;
+        this.Projectile.drawLayer = 7;
+    }
+    
+    OnSpawn(proj) {
         
-        projectile.SetStaticDefaults();
-    }*/
+    }
+    
+    PreAI(proj) {
+        return true;
+    }
+    
+    AI(proj) {
+        
+    }
+    
+    PreKill(proj, timeLeft) {
+        return true;
+    }
+    
+    OnKill(proj, timeLeft) {
+        
+    }
+    
+    Colliding(proj, myRect, targetRect) {
+        return null;
+    }
+    
+    OnTileCollide(proj, hitDirection) {
+        return true;
+    }
+    
+    CanCutTiles(proj) {
+        return null;
+    }
+    
+    CutTiles(proj) {
+        
+    }
+    
+    OnHitNPC(proj, npc) {
+        
+    }
+    
+    OnHitPlayer(proj, player) {
+        
+    }
+    
+    ApplyShader(proj) {
+        return null;
+    }
+    
+    GetShaderIdFromItemId(itemId) {
+        return Terraria.Graphics.Shaders.GameShaders.Armor.GetShaderIdFromItemId(itemId);
+    }
+    
+    GetAlpha(proj, color) {
+        return color;
+    }
+    
+    PreDraw(proj, lightColor) {
+        return true;
+    }
+    
+    PostDraw(proj, lightColor) {
+        
+    }
+    
+    CanDamage(proj) {
+        return true;
+    }
+    
+    ModifyDamageHitbox(proj, hitbox) {
+        
+    }
+    
+    static register(proj) {
+        ProjectileLoader.register(new proj());
+    }
+    static isModType(type) { return ProjectileLoader.isModType(type); }
+    static isModProjectile(proj) { return ProjectileLoader.isModProjectile(proj); }
+    static getByName(name) { return ProjectileLoader.getByName(name); }
+    static getTypeByName(name) { return ProjectileLoader.getTypeByName(name); }
+    static getModProjectile(type) { return ProjectileLoader.getModProjectile(type); }
 }

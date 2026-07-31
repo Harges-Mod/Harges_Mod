@@ -1,431 +1,362 @@
-/** @format */
+import { Terraria, Microsoft } from './../ModImports.js';
+import { ModLoader } from './../Core/ModLoader.js';
+import { ModTexture } from './../ModTexture.js';
+import { ModLocalization } from './../ModLocalization.js';
+import { GlobalProjectile } from './../GlobalProjectile.js';
 
-import { GlobalProjectile } from '../GlobalProjectile.js';
-import { ModHooks } from '../ModHooks.js';
-import { Terraria, ReLogic, Microsoft } from '../ModImports.js';
-import { ModTexture } from '../ModTexture.js';
-import { ModLocalization } from '../ModLocalization.js';
-import { ModProjectile } from '../ModProjectile.js';
-const Vector2 = new NativeClass('Microsoft.Xna.Framework', 'Vector2');
-const Negative = Vector2['Vector2 Negate(Vector2 value)'];
+function cloneResizedSetLastItem(array, newSize, value) {
+    const resized = array.cloneResized(newSize);
+    if (value != null) resized[newSize - 1] = value;
+    return resized;
+}
 
-const Main = Terraria.Main;
-const EntitySpriteDraw =
-	Main['void EntitySpriteDraw(Texture2D texture, Vector2 position, Rectangle sourceRectangle, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects, float worthless)'];
-const v_Subtract = Microsoft.Xna.Framework.Vector2['Vector2 Subtract(Vector2 value1, Vector2 value2)'];
-const Frame = Terraria.Utils['Rectangle Frame(Texture2D tex, int horizontalFrames, int verticalFrames, int frameX, int frameY, int sizeOffsetX, int sizeOffsetY)'];
+function resizeArrayProperty(propertyHolder, propertyName, newSize, value) {
+    propertyHolder[propertyName] = cloneResizedSetLastItem(propertyHolder[propertyName], newSize, value);
+}
+
+function addToArray(propertyHolder, propertyName, value) {
+    const array = propertyHolder[propertyName];
+    const arrayLength = array.length;
+    propertyHolder[propertyName] = cloneResizedSetLastItem(array, arrayLength + 1, value);
+}
 
 export class ProjectileLoader {
-	static RegisteredProjectile = [];
-	static Registered = 0;
-
-	static MAX_VANILLA_PROJECTILE_ID = Terraria.ID.ProjectileID.Count;
-
-	static isModType(type) {
-		return type >= ProjectileLoader.MAX_VANILLA_PROJECTILE_ID;
-	}
-
-	static isModProjectile(projectile) {
-		return ProjectileLoader.isModType(projectile.type);
-	}
-
-	static getByName(name) {
-		for (let projectile of ProjectileLoader.RegisteredProjectile) {
-			if (projectile.constructor.name === name) {
-				return projectile;
-			}
-		}
-	}
-
-	static getTypeByName(name) {
-		return ProjectileLoader.getByName(name).Type;
-	}
-
-	static getModProjectile(type) {
-		if (ProjectileLoader.isModType(type)) {
-			for (let projectile of ProjectileLoader.RegisteredProjectile) {
-				if (projectile.Type === type) {
-					return projectile;
-				}
-			}
-		}
-
-		return undefined;
-	}
-
-	static register(projectile) {
-		ProjectileLoader.RegisteredProjectile.push(new projectile());
-		//ProjectileLoader.Registered++;
-		ModHooks.initialize();
-	}
-
-	static register2(projectiles) {
-		projectiles.forEach(projectile => {
-			ProjectileLoader.RegisteredProjectile.push(new projectile());
-			//ProjectileLoader.Registered++
-		});
-		ModHooks.initialize();
-	}
-
-	static InitializeRegisteredProjectile() {
-		for (let projectile of ProjectileLoader.RegisteredProjectile) {
-			ProjectileLoader.InitializeProjectile(projectile);
-		}
-
-		tl.log(`\n\nPROJECTILES ADDED!\n\n`);
-	}
-
-	static InitializeProjectile(projectile) {
-		projectile.Projectile = {};
-
-		const projectileName = projectile.constructor.name;
-		ProjectileLoader.Registered++;
-
-		const newSize = Terraria.ID.ProjectileID.Count + ProjectileLoader.Registered;
-
-		tl.log(`${newSize}`);
-
-		projectile.Type = projectile.Projectile.type = tl.projectile.registerNew(projectileName);
-		tl.log(`\n\n${projectileName}, id-${projectile.Type}, count-${newSize}`);
-
-		function cloneResizedSetLastProjectile(array, newSize, value) {
-			const resized = array.cloneResized(newSize);
-			resized[newSize - 1] = value;
-			return resized;
-		}
-
-		function resizeArrayProperty(propertyHolder, propertyName, newSize, value) {
-			propertyHolder[propertyName] = cloneResizedSetLastProjectile(propertyHolder[propertyName], newSize, value);
-		}
-
-		function addProjectileToArray(propertyHolder, propertyName, proj) {
-			const array = propertyHolder[propertyName];
-			const arrayLength = array.length;
-			propertyHolder[propertyName] = cloneResizedSetLastProjectile(array, arrayLength + 1, proj);
-		}
-
-		function resizeTextureAssets(propertyName, newSize, value) {
-			resizeArrayProperty(Terraria.GameContent.TextureAssets, propertyName, newSize, value);
-		}
-
-		Terraria.Main.projHostile = Terraria.Main.projHostile.cloneResized(newSize);
-		Terraria.Main.projHook = Terraria.Main.projHook.cloneResized(newSize);
-		Terraria.Main.projPet = Terraria.Main.projPet.cloneResized(newSize);
-		Terraria.Main.projFrames = Terraria.Main.projFrames.cloneResized(newSize);
-
-		addProjectileToArray(Terraria.Lang, '_projectileNameCache', ModLocalization.getTranslationProjectileName(projectileName));
-
-		const projectileTexture = new ModTexture(projectile.Texture);
-		if (projectileTexture.exists) {
-			tl.log(`\n\nBefore resizing, Projectile length: ${Terraria.GameContent.TextureAssets.Projectile.length}\n\n`);
-			resizeTextureAssets('Projectile', newSize, projectileTexture.asset.asset);
-
-			tl.log(`\n\nAfter resizing, Projectile length: ${Terraria.GameContent.TextureAssets.Projectile.length}\n\n`);
-		} else {
-			tl.log('\n\nTEXTURE NOT FOUND');
-		}
-
-		projectile.SetStaticDefaults();
-
-		tl.log(`\n\n\nFinal array content for Projectile: - ${Terraria.GameContent.TextureAssets.Projectile.length}`);
-	}
-
-	static SetDefaults(projectile) {
-		for (let globalProjectile of GlobalProjectile.RegisteredProjectile) {
-			globalProjectile.SetDefaults(projectile);
-		}
-	}
-
-	static OnSpawn(projectile, source) {
-		ModProjectile.getModProjectile(projectile.type)?.OnSpawnMod(projectile, source);
-
-		for (let globalProjectile of GlobalProjectile.RegisteredProjectile) {
-			globalProjectile.OnSpawn(projectile, source);
-		}
-	}
-
-	static PreAI(projectile) {
-		let result = true;
-
-		for (let globalProjectile of GlobalProjectile.RegisteredProjectile) {
-			result = result && globalProjectile.PreAIMod();
-		}
-
-		if (result && ModProjectile.getModProjectile(projectile) != null) {
-			return ModProjectile.PreAI(projectile);
-		}
-
-		return result;
-	}
-
-	static AI(projectile) {
-		ModProjectile.getModProjectile(projectile.type)?.AIMod(projectile);
-
-		for (let globalProjectile of GlobalProjectile.RegisteredProjectile) {
-			globalProjectile.AI(projectile);
-		}
-	}
-
-	static PostAI(projectile) {
-		ModProjectile.getModProjectile(projectile.type)?.PostAIMod();
-
-		for (let globalProjectile of GlobalProjectile.RegisteredProjectile) {
-			globalProjectile.PostAI(projectile);
-		}
-	}
-
-	static ProjectileAI(projectile) {
-		if (ProjectileLoader.PreAI(projectile)) {
-			let type = projectile.type;
-			let useAIType = ModProjectile.getModProjectile(projectile) != null && ModProjectile.getModProjectile(projectile).AIType > 0;
-			if (useAIType) {
-				projectile.type = ModProjectile.getModProjectile(projectile.type).AIType;
-			}
-			projectile.VanillaAI();
-
-			if (useAIType) {
-				projectile.type = type;
-			}
-
-			ProjectileLoader.AI(projectile);
-		}
-
-		ProjectileLoader.PostAI(projectile);
-	}
-
-	static ShouldUpdatePosition(projectile) {
-		if (ProjectileLoader.isModProjectile(projectile) && !ModProjectile.getModProjectile(projectile.type).ShouldUpdatePosition(projectile)) {
-			return false;
-		}
-
-		for (let globalProjectile of GlobalProjectile.RegisteredProjectile) {
-			if (!globalProjectile.ShouldUpdatePosition(projectile)) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	static TileCollideStyle(projectile, width, height, fallThrough, hitboxCenterFrac) {
-		if (ProjectileLoader.isModProjectile(projectile) && !ModProjectile.getModProjectile(projectile.type).TileCollideStyleMod(width, height, fallThrough, hitboxCenterFrac)) {
-			return false;
-		}
-
-		for (let globalProjectile of GlobalProjectile.RegisteredProjectile) {
-			if (!globalProjectile.TileCollideStyle(projectile, width, height, fallThrough, hitboxCenterFrac)) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	static OnTileCollide(projectile, oldVelocity) {
-		let result = true;
-
-		for (let globalProjectile of GlobalProjectile.RegisteredProjectile()) {
-			result = result && globalProjectile.OnTileCollide(projectile, oldVelocity);
-		}
-
-		if (result && ModProjectile.getModProjectile(projectile.type) != null) {
-			return ModProjectile.getModProjectile(projectile.type).OnTileCollideMod(oldVelocity);
-		}
-
-		return result;
-	}
-
-	static PreKill(projectile, timeLeft) {
-		let result = true;
-
-		for (let globalProjectile of GlobalProjectile.RegisteredProjectile) {
-			globalProjectile.PreKillGlobal(projectile, timeLeft);
-		}
-
-		if (result && ModProjectile.getModProjectile(projectile.type) != null) {
-			return ModProjectile.getModProjectile(projectile.type).PreKillMod(timeLeft);
-		}
-
-		return result;
-	}
-
-	static Kill(projectile, timeLeft) {
-		ModProjectile.getModProjectile(projectile.type)?.Kill(projectile, timeLeft);
-
-		for (let projectile of GlobalProjectile.RegisteredProjectile) {
-			projectile.KillGlobal(projectile, timeLeft);
-		}
-	}
-
-	static CanDamage(projectile) {
-		let result = null;
-
-		for (let globalProjectile of GlobalProjectile.RegisteredProjectile) {
-			let canDamage = globalProjectile.CanDamage(projectile);
-
-			if (canDamage.HasValue) {
-				if (!canDamage.HasValue) {
-					return false;
-				}
-
-				result = true;
-			}
-		}
-
-		return result ?? ModProjectile.getModProjectile(projectile.type)?.CanDamageMod();
-	}
-
-	static CanHitNPC(projectile, target) {
-		let flag = null;
-
-		for (let globalProjectile of GlobalProjectile.RegisteredProjectile) {
-			let canHit = globalProjectile.CanHitNPC(projectile, target);
-
-			if (canHit > 0 && canHit == null) {
-				return false;
-			}
-
-			if (canHit > 0) {
-				flag = canHit.HasValue;
-			}
-		}
-
-		if (ModProjectile.getModProjectile(projectile.type) != null) {
-			let canHit = ModProjectile.getModProjectile(projectile.type).CanHitNPCMod(target);
-
-			if (canHit > 0 && canHit == null) {
-				return false;
-			}
-
-			if (canHit > 0) {
-				flag = canHit.HasValue;
-			}
-		}
-
-		return flag;
-	}
-
-	static OnHitNPC(projectile, target, damage, knockback) {
-		ModProjectile.getModProjectile(projectile.type)?.OnHitNPC(projectile, target, damage, knockback);
-
-		for (let globalProjectile of GlobalProjectile.RegisteredProjectile) {
-			globalProjectile.OnHitNPCGlobal(projectile, target, damage, knockback);
-		}
-	}
-
-	static CanHitPlayer(projectile, target) {
-		for (let globalProjectile of GlobalProjectile.RegisteredProjectile) {
-			if (!globalProjectile.CanHitPlayer(projectile, target)) {
-				return false;
-			}
-		}
-
-		if (ModProjectile.getModProjectile(projectile.type) != null) {
-			return ModProjectile.getModProjectile(projectile.type).CanHitPlayerMod(target);
-		}
-
-		return true;
-	}
-
-	static OnHitPlayer(projectile, target, damage, crit) {
-		ModProjectile.getModProjectile(projectile.type)?.OnHitPlayerMod(projectile, target, damage, crit);
-
-		for (let globalProjectile of GlobalProjectile.RegisteredProjectile) {
-			globalProjectile.OnHitPlayer(projectile, target, damage, crit);
-		}
-	}
-
-	static Colliding(projectile, projHitbox, targetHibox) {
-		for (let globalProjectile of GlobalProjectile.RegisteredProjectile) {
-			let colliding = globalProjectile.Colliding(projectile, projHitbox, targetHibox);
-
-			if (colliding.HasValue) {
-				return colliding.Value;
-			}
-		}
-
-		return ModProjectile.getModProjectile(projectile.type)?.CollidingMod(projHitbox, targetHibox);
-	}
-
-	static DrawHeldProjInFrontOfHeldItemAndArms(projectile, flag) {
-		if (ModProjectile.getModProjectile(projectile.type) != null) {
-			flag = ModProjectile.getModProjectile(projectile.type).DrawHeldProjInFrontOfHeldItemAndArms;
-		}
-	}
-
-	static GetAlpha(projectile, color) {
-		for (let globalProjectile of GlobalProjectile.RegisteredProjectile) {
-			color = globalProjectile.GetAlpha(projectile, color);
-
-			if (color.HasValue) {
-				return color;
-			}
-		}
-
-		return ModProjectile.getModProjectile(projectile.type)?.GetAlphaMod(color);
-	}
-
-	static DrawOffset(projectile, offsetX, offsetY, originX) {
-		if (ModProjectile.getModProjectile(projectile.type) != null) {
-			offsetX = ModProjectile.getModProjectile(projectile.type).DrawOffsetX;
-			offsetY = Negative(ModProjectile.getModProjectile(projectile.type).DrawOriginOffsetY);
-			originX += ModProjectile.getModProjectile(projectile.type).DrawOriginOffsetX;
-		}
-	}
-
-	static PreDrawExtras(projectile) {
-		let result = true;
-
-		for (let globalProjectile of GlobalProjectile.RegisteredProjectile) {
-			result = result && globalProjectile.PreDrawExtras(projectile);
-		}
-
-		if (result && ModProjectile.getModProjectile(projectile.type) != null) {
-			return ModProjectile.getModProjectile(projectile.type).PreDrawExtrasMod();
-		}
-
-		return result;
-	}
-
-	/* TODO NO NEED.
-	static Draw(proj, LightColor) {
-		if (ProjectileLoader.isModType(proj.type)) {
-			const projectileName = ProjectileLoader.getModProjectile(proj.type).constructor.name;
-
-			if (projectileName && ModHooks.tmp_tex && ModHooks.tmp_tex[projectileName]) {
-				const texture = ModHooks.tmp_tex[projectileName];
-
-				if (texture && texture.asset && texture.asset.asset) {
-					const tex = texture.asset.asset.Value;
-					const pivot = Microsoft.Xna.Framework.Vector2.new()['void .ctor(float x, float y)'](tex.Width / 2, tex.Height / 2);
-					const pos = v_Subtract(proj.Center, Main.screenPosition);
-					const Rect = Frame(tex, 1, 1, 0, 0, 0, 0);
-
-					EntitySpriteDraw(tex, pos, proj.getRect(), LightColor, proj.rotation, pivot, proj.scale, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 0);
-				}
-			}
-		}
-	}*/
-
-	static PreDraw(projectile, lightColor) {
-		let result = true;
-
-		for (let globalProjectile of GlobalProjectile.RegisteredProjectile) {
-			result = result && globalProjectile.PreDraw(projectile, lightColor);
-		}
-
-		if (result && ModProjectile.getModProjectile(projectile.type) != null) {
-			return ModProjectile.getModProjectile(projectile.type).PreDrawMod(projectile, lightColor);
-		}
-
-		return result;
-	}
-
-	static PostDraw(projectile, lightColor) {
-		ModProjectile.getModProjectile(projectile.type)?.PostDrawMod(lightColor);
-
-		for (let globalProjectile of GlobalProjectile.RegisteredProjectile) {
-			globalProjectile.PostDraw(projectile, lightColor);
-		}
-	}
+    static Projectiles = [];
+    static MAX_VANILLA_ID = Terraria.ID.ProjectileID.Count;
+    static Count = 0;
+    static TypeOffset = 0;
+    static ModTypes = new Set();
+    static IndexByName = {};
+    static TypeToIndex = {};
+    static ProjectileCount = this.MAX_VANILLA_ID + this.Count;
+    
+    static isModProjectile(proj) { return this.isModType(proj.type); }
+    static isModType(type) { return this.ModTypes.has(type); }
+    static getByName(name) { return this.Projectiles[this.IndexByName[name]]; }
+    static getTypeByName(name) { return this.getByName(name)?.Type; }
+    static getModProjectile(type) {
+        if (this.ModTypes.has(type)) {
+            return this.Projectiles[this.TypeToIndex[type]];
+        }
+        return undefined;
+    }
+    static register(proj) {
+        const next = ProjectileLoader.Projectiles.length;
+        ProjectileLoader.Projectiles.push(proj);
+        this.IndexByName[proj.constructor.name] = next;
+    }
+    
+    static ProjectileProperties = [
+        'ownerHitCheckDistance',
+        'counterweight',
+        'sentry',
+        'arrow',
+        'bobber',
+        'numHits',
+        'netImportant',
+        'manualDirectionChange',
+        'decidesManualFallThrough',
+        'shouldFallThrough',
+        'bannerIdToRespondTo',
+        'stopsDealingDamageAfterPenetrateHits',
+        'localNPCHitCooldown',
+        'idStaticNPCHitCooldown',
+        'usesLocalNPCImmunity',
+        'usesIDStaticNPCImmunity',
+        'usesOwnerMeleeHitCD',
+        'appliesImmunityTimeOnSingleHits',
+        'noDropItem',
+        'minion',
+        'minionSlots',
+        'soundDelay',
+        'spriteDirection',
+        'melee',
+        'ranged',
+        'magic',
+        'ownerHitCheck',
+        'drawLayer',
+        'usesOwnerLight',
+        'hide',
+        'ignoreWater',
+        'hostile',
+        'reflected',
+        'netUpdate',
+        'netUpdate2',
+        'netSpam',
+        'numUpdates',
+        'extraUpdates',
+        'restrikeDelay',
+        'light',
+        'penetrate',
+        'tileCollide',
+        'aiStyle',
+        'alpha',
+        'rotation',
+        'scale',
+        'timeLeft',
+        'friendly',
+        'damage',
+        'originalDamage',
+        'knockBack',
+        'miscText',
+        'coldDamage',
+        'noEnchantments',
+        'noEnchantmentVisuals',
+        'trap',
+        'npcProj',
+        'originatedFromActivableTile',
+        'tagEffectType',
+        'bonusTagDamage',
+        'armorPenetration',
+        'bonusCritChance',
+        'hostileDamageScaling'
+    ];
+    
+    static LoadProjectiles() {
+        this.TypeOffset = ModLoader.ModData.ProjectileCount ?? 0;
+        for (const proj of this.Projectiles) {
+            this.LoadProjectile(proj);
+        }
+    }
+    
+    static LoadProjectile(proj) {
+        this.Count++;
+        proj.Projectile = {};
+        proj.Type = proj.Projectile.type = tl.projectile.registerNew(proj.constructor.name);
+        this.ModTypes.add(proj.Type);
+        const nextProjectile = proj.Type + 1;
+        this.TypeToIndex[proj.Type] = this.Projectiles.indexOf(proj);
+        
+        resizeArrayProperty(Terraria.Main, 'projHostile', nextProjectile);
+        resizeArrayProperty(Terraria.Main, 'projHook', nextProjectile);
+        resizeArrayProperty(Terraria.Main, 'projPet', nextProjectile);
+        resizeArrayProperty(Terraria.Main, 'projFrames', nextProjectile);
+        
+        addToArray(Terraria.Lang, '_projectileNameCache', ModLocalization.empty());
+        
+        //resizeArrayProperty(Terraria.Projectile, 'perIDStaticNPCImmunity', nextProjectile);
+        
+        this.SetupTextures(proj);
+        
+        proj.SetDefaults();
+        proj.SetStaticDefaults();
+        
+        if (proj.Projectile.hostile) {
+            Terraria.Main.projHostile[proj.Type] = true;
+        }
+        if (proj.Projectile.aiStyle === Terraria.ID.ProjAIStyleID.Hook) {
+            Terraria.Main.projHook[proj.Type] = true;
+        }
+        Terraria.Lang._projectileNameCache[proj.Type] = ModLocalization.getTranslationProjectileName(proj.Type);
+        
+        const projTexture = Terraria.GameContent.TextureAssets.Projectile[proj.Type].Value;
+        if (proj.Projectile.width == undefined) proj.Projectile.width = projTexture.Width;
+        if (proj.Projectile.height == undefined) proj.Projectile.height = projTexture.Height;
+        
+        proj.PostStaticDefaults();
+    }
+    
+    static SetupContent() {
+        this.LoadProjectiles();
+        ModLoader.ModData.ProjectileCount += this.Count;
+        for (const proj of this.Projectiles) {
+            proj?.SetupContent();
+        }
+    }
+    
+    static PostSetupContent() {
+        this.ProjectileCount = this.MAX_VANILLA_ID + ModLoader.ModData.ProjectileCount;
+        for (const proj of this.Projectiles) {
+            proj?.PostSetupContent();
+        }
+    }
+    
+    static SetupTextures(proj) {
+        if (!proj.Texture?.startsWith('Textures/')) {
+            proj.Texture = 'Textures/' + proj.Texture;
+        }
+        
+        const projTexture = new ModTexture(proj.Texture, proj.horizontalFrames, proj.frameCount, proj.ticksPerFrame);
+        if (projTexture?.exists) {
+            Terraria.GameContent.TextureAssets.Projectile[proj.Type] = projTexture.asset.asset;
+        }
+        
+        // _Glow
+        const projGlowTexture = new ModTexture(`${proj.Texture}_Glow`);
+        if (projGlowTexture?.exists) {
+            const newIndex = Terraria.GameContent.TextureAssets.GlowMask.length;
+            const newSize = newIndex + 1;
+            resizeArrayProperty(Terraria.GameContent.TextureAssets, 'GlowMask', newSize, projGlowTexture.asset.asset);
+            proj.Projectile.glowMask = newIndex;
+        }
+    }
+    
+    static SetDefaults(proj) {
+        for (const gProj of GlobalProjectile.RegisteredProjectiles) {
+            gProj?.SetDefaults(proj);
+        }
+    }
+    
+    static OnSpawn(proj) {
+        if (this.isModType(proj.type)) {
+            this.getModProjectile(proj.type)?.OnSpawn(proj);
+        }
+        for (const gProj of GlobalProjectile.RegisteredProjectiles) {
+            gProj?.OnSpawn(proj);
+        }
+    }
+    
+    static PreAI(proj) {
+        let value = true;
+        if (this.isModType(proj.type)) {
+            value = this.getModProjectile(proj.type)?.PreAI(proj) ?? true;
+        }
+        if (GlobalProjectile.RegisteredProjectiles.some(gP => (gP?.PreAI(proj) ?? true) === false)) {
+            value = false;
+        }
+        return value;
+    }
+    
+    static AI(proj) {
+        if (this.isModType(proj.type)) {
+            this.getModProjectile(proj.type)?.AI(proj);
+        }
+        for (const gProj of GlobalProjectile.RegisteredProjectiles) {
+            gProj?.AI(proj);
+        }
+    }
+    
+    static PreKill(proj, timeLeft) {
+        let value = true;
+        if (this.isModType(proj.type)) {
+            value = this.getModProjectile(proj.type)?.PreKill(proj, timeLeft) ?? true;
+        }
+        if (GlobalProjectile.RegisteredProjectiles.some(gP => (gP?.PreKill(proj, timeLeft) ?? true) === false)) {
+            value = false;
+        }
+        return value;
+    }
+    
+    static OnKill(proj, timeLeft) {
+        if (this.isModType(proj.type)) {
+            this.getModProjectile(proj.type)?.OnKill(proj, timeLeft);
+        }
+        for (const gProj of GlobalProjectile.RegisteredProjectiles) {
+            gProj?.OnKill(proj, timeLeft);
+        }
+    }
+    
+    static Colliding(proj, myRect, targetRect) {
+        let value = null;
+        if (this.isModType(proj.type)) {
+            value = this.getModProjectile(proj.type)?.Colliding(proj, myRect, targetRect);
+        }
+        return value;
+    }
+    
+    static OnTileCollide(proj, hitDirection) {
+        let value = true;
+        if (this.isModType(proj.type)) {
+            value = this.getModProjectile(proj.type)?.OnTileCollide(proj, hitDirection) ?? true;
+        }
+        return value;
+    }
+    
+    static CanCutTiles(proj) {
+        let value = null;
+        if (this.isModType(proj.type)) {
+            value = this.getModProjectile(proj.type)?.CanCutTiles(proj);
+        }
+        if (GlobalProjectile.RegisteredProjectiles.some(gP => (gP?.CanCutTiles(proj) ?? true) === false)) {
+            value = false;
+        }
+        return value;
+    }
+    
+    static CutTiles(proj) {
+        if (this.isModType(proj.type)) {
+            this.getModProjectile(proj.type)?.CutTiles(proj);
+        }
+        for (const gProj of GlobalProjectile.RegisteredProjectiles) {
+            gProj?.CutTiles(proj);
+        }
+    }
+    
+    static OnHitNPC(proj, npc) {
+        if (this.isModType(proj.type)) {
+            this.getModProjectile(proj.type)?.OnHitNPC(proj, npc);
+        }
+        for (const gProj of GlobalProjectile.RegisteredProjectiles) {
+            gProj?.OnHitNPC(proj, npc);
+        }
+    }
+    
+    static OnHitPlayer(proj, player) {
+        if (this.isModType(proj.type)) {
+            this.getModProjectile(proj.type)?.OnHitPlayer(proj, player);
+        }
+        for (const gProj of GlobalProjectile.RegisteredProjectiles) {
+            gProj?.OnHitPlayer(proj, player);
+        }
+    }
+    
+    static ApplyShader(proj) {
+        let value = null;
+        if (this.isModType(proj.type)) {
+            value = this.getModProjectile(proj.type)?.ApplyShader(proj);
+        }
+        return value;
+    }
+    
+    static GetAlpha(proj, color) {
+        let value = color;
+        if (this.isModType(proj.type)) {
+            value = this.getModProjectile(proj.type)?.GetAlpha(proj, value) ?? value;
+        }
+        for (const gProj of GlobalProjectile.RegisteredProjectiles) {
+            value = gProj?.GetAlpha(proj, value) ?? value;
+        }
+        return value;
+    }
+    
+    static PreDraw(proj, lightColor) {
+        let value = true;
+        if (this.isModType(proj.type)) {
+            value = this.getModProjectile(proj.type)?.PreDraw(proj, lightColor) ?? value;
+        }
+        if (GlobalProjectile.RegisteredProjectiles.some(gP => (gP?.PreDraw(proj, lightColor) ?? true) === false)) {
+            value = false;
+        }
+        return value;
+    }
+    
+    static PostDraw(proj, lightColor) {
+        if (this.isModType(proj.type)) {
+            this.getModProjectile(proj.type)?.PostDraw(proj, lightColor);
+        }
+        for (const gProj of GlobalProjectile.RegisteredProjectiles) {
+            gProj.PostDraw(proj, lightColor);
+        }
+    }
+    
+    static CanDamage(proj) {
+        let value = true;
+        if (this.isModType(proj.type)) {
+            value = this.getModProjectile(proj.type)?.CanDamage(proj) ?? true;
+        }
+        if (GlobalProjectile.RegisteredProjectiles.some(gP => (gP?.CanDamage(proj) ?? true) === false)) {
+            value = false;
+        }
+        return value;
+    }
+    
+    static ModifyDamageHitbox(proj, hitbox) {
+        if (this.isModType(proj.type)) {
+            this.getModProjectile(proj.type)?.ModifyDamageHitbox(proj, hitbox);
+        }
+        for (const gProj of GlobalProjectile.RegisteredProjectiles) {
+            gProj.ModifyDamageHitbox(proj, hitbox);
+        }
+        return hitbox;
+    }
 }

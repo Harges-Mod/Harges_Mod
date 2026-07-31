@@ -1,305 +1,490 @@
-import { ModPlayer } from "TL/ModPlayer.js";
-import { Terraria } from "TL/ModImports.js";
+import { Terraria } from './../ModImports.js';
 
 export class PlayerLoader {
-    static Luck = { value: 0 };
-    static PreHurtModifiers = {};
-
-    static CanShoot(self, item) {
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = self;
-            if (!player.CanShoot(item)) {
-                return false;
-            }
+    static RegisteredPlayers = [];
+    
+    static getByName(name) { return this.RegisteredPlayers.find(p => p.constructor.name === name); }
+    
+    static OnEnterWorld(player) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.OnEnterWorld(player);
         }
-
+    }
+    
+    static OnRespawn(player) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.OnRespawn(player);
+        }
+    }
+    
+    static ModifyMaxStats(player) {
+        let cumulativeHealth = 0;
+        let cumulativeMana = 0;
+        
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.ModifyMaxStats(player);
+            cumulativeHealth += modPlayer?.CumulativeHealth ?? 0;
+            cumulativeMana += modPlayer?.CumulativeMana ?? 0;
+        }
+        
+        if (cumulativeHealth !== 0) player.statLifeMax2 = Math.max(1, player.statLifeMax2 + cumulativeHealth);
+        if (cumulativeMana !== 0) player.statManaMax2 = Math.max(1, player.statManaMax2 + cumulativeMana);
+    }
+    
+    static ResetEffects(player) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer.ResetEffects(player);
+        }
+    }
+    
+    static UpdateDead(player) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer.UpdateDead(player);
+        }
+    }
+    
+    static UpdateBadLifeRegen(player) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.UpdateBadLifeRegen(player);
+        }
+    }
+    
+    static UpdateLifeRegen(player) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.UpdateLifeRegen(player);
+        }
+    }
+    
+    static UpdateManaRegen(player) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.UpdateManaRegen(player);
+        }
+    }
+    
+    static PreUpdate(player) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.PreUpdate(player);
+        }
+    }
+    
+    static PostUpdate(player) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.PostUpdate(player);
+        }
+    }
+    
+    static PreUpdateBuffs(player) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.PreUpdateBuffs(player);
+        }
+    }
+    
+    static PostUpdateBuffs(player) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.PostUpdateBuffs(player);
+        }
+    }
+    
+    static PreItemCheck(player) {
+        if (this.RegisteredPlayers.some(mP => (mP?.PreItemCheck(player) ?? true) === false)) {
+            return false;
+        }
         return true;
     }
-
-    static UseSpeedMultiplier(self, item) {
+    
+    static PostItemCheck(player) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.PostItemCheck(player);
+        }
+    }
+    
+    static CanUseItem(player, item) {
+        let value = true;
+        if (this.RegisteredPlayers.some(mP => (mP?.CanUseItem(player, item) ?? true) === false)) {
+            value = false;
+        }
+        return value;
+    }
+    
+    static CanAutoReuseItem(player, item) {
+        let value = true;
+        if (this.RegisteredPlayers.some(mP => (mP?.CanAutoReuseItem(player, item) ?? true) === false)) {
+            value = false;
+        }
+        return value;
+    }
+    
+    static ConsumeItem(player, item) {
+        let value = true;
+        if (this.RegisteredPlayers.some(mP => (mP?.ConsumeItem(player, item) ?? true) === false)) {
+            value = false;
+        }
+        return value;
+    }
+    
+    static OnConsumeItem(player, item) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.OnConsumeItem(player, item);
+        }
+    }
+    
+    static UseTimeMultiplier(player, item) {
+        if (!item || item.type === 0) return 1.0;
         let multiplier = 1.0;
-
-        if (item.IsAir) {
-            return multiplier;
+        for (const modPlayer of this.RegisteredPlayers) {
+            multiplier *= modPlayer?.UseTimeMultiplier(player, item) ?? 1.0;
         }
-
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = self;
-            multiplier *= player.UseSpeedMultiplier(item);
-        }
-
         return multiplier;
     }
-
-    static UseAnimationMultiplier(self, item) {
+    
+    static UseAnimationMultiplier(player, item) {
+        if (!item || item.type === 0) return 1.0;
         let multiplier = 1.0;
-
-        if (item.IsAir) {
-            return multiplier;
+        for (const modPlayer of this.RegisteredPlayers) {
+            multiplier *= modPlayer?.UseAnimationMultiplier(player, item) ?? 1.0;
         }
-
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = self;
-            multiplier *= player.UseAnimationMultiplier(item);
-        }
-
         return multiplier;
     }
-
-    static UseTimeMultiplier(self, item) {
+    
+    static UseSpeedMultiplier(player, item) {
+        if (!item || item.type === 0) return 1.0;
         let multiplier = 1.0;
-
-        if (item.IsAir) {
-            return multiplier;
+        for (const modPlayer of this.RegisteredPlayers) {
+            multiplier *= modPlayer?.UseSpeedMultiplier(player, item) ?? 1.0;
         }
-
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = self;
-            multiplier *= player.UseTimeMultiplier(item);
-        }
-
         return multiplier;
     }
-
-    static CanUseItem(self, item) {
-        let result = true;
-
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = self;
-            result &= player.CanUseItem(item);
+    
+    static UseItem(player, item) {
+        if (this.RegisteredPlayers.some(gP => (gP?.UseItem(player, item) ?? true) === false)) {
+            return false;
         }
-
-        return result;
+        return true;
     }
-
-    static ModifyManaCost(self, item, modifyMana) {
-        if (item.IsAir) {
-            return;
-        }
-
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = self;
-            player.ModifyManaCost(item, modifyMana);
-        }
-    }
-    static HealEffect(self, amount, cast) {
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = self
-            player.HealEffect(amount, cast)
+    
+    static UseAnimation(player, item) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.UseAnimation(player, item);
         }
     }
     
-    static OnMissingMana(self, item, manaNeeded) {
-        if (item.IsAir) {
-            return;
+    static GetHealLife(player, item, healValue = 0) {
+        let newValue = healValue;
+        for (const modPlayer of this.RegisteredPlayers) {
+            newValue = modPlayer?.GetHealLife(player, item, newValue) ?? newValue;
         }
-
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = self;
-            player.OnMissingMana(item, manaNeeded);
-        }
-    }
-
-    static OnConsumeMana(self, item, manaConsumed) {
-        if (item.IsAir) {
-            return;
-        }
-
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = self;
-            player.OnConsumeMana(item, manaConsumed);
-        }
-    }
-
-    static PreModifyLuck(self, luck) {
-        let flag = true;
-
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = self;
-            if (!player.PreModifyLuck(luck)) {
-                flag = false;
-            }
-        }
-        self.luck = luck.value;
-
-        return flag;
+        return newValue;
     }
     
-    static ModifyLuck(self, luck) {
-        let flag = true;
-
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = self;
-            if (!player.PreModifyLuck(luck)) {
-                flag = false;
-            }
+    static GetHealMana(item, player, healValue = 0) {let newValue = healValue;
+        for (const modPlayer of this.RegisteredPlayers) {
+            newValue = modPlayer?.GetHealMana(player, item, newValue) ?? newValue;
         }
-        self.luck = luck.value;
-
-        return flag;
+        return newValue;
     }
-
-    static GetHealLife(self, item, quickHeal, healValue) {
-        if (item.IsAir) {
-            return;
-        }
-
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = self;
-            player.GetHealLife(item, quickHeal, healValue);
-        }
-    }
-
-    static GetHealMana(self, item, quickHeal, healValue) {
-        if (item.IsAir) {
-            return;
-        }
-
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = self;
-            player.GetHealMana(item, quickHeal, healValue);
+    
+    static OnConsumeMana(player, item, manaConsumed) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.OnConsumeMana(player, item, manaConsumed);
         }
     }
     
-    static Heal(self, Amount) {
-    for (let player of ModPlayer.RegisteredPlayers) {
-        player.player = self;
-        
-        player.Heal(Amount);
-       }
-    }
-
-    static PreUpdate(self) {
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = self;
-            player.PreUpdate();
-        }
-    }
-
-    static PostUpdate(self) {
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = self;
-            player.PostUpdate();
-        }
-    }
-
-    static OnRespawn(self) {
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = self;
-            player.OnRespawn();
-        }
-    }
-
-    static OnHitAnything(self, x, y, victim) {
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = self;
-            player.OnHitAnything(x, y, victim);
-        }
-    }
-
-    static UpdateBadLifeRegen(self) {
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = self;
-            player.UpdateBadLifeRegen();
-        }
-    }
-
-    static UpdateLifeRegen(self) {
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = self;
-            player.UpdateLifeRegen();
-        }
-    }
-
-    static UpdateDead(self) {
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = self;
-            player.UpdateDead();
-        }
-    }
-
-    static ResetEffects(self) {
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = self;
-            player.ResetEffects();
-        }
-    }
-
-    static OnEnterWorld(playerIndex) {
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = Terraria.Main.player[playerIndex];
-            player.OnEnterWorld(player.player);
-        }
-    }
-
-    static PostItemCheck(self) {
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = self;
-            player.PostItemCheck();
-        }
-    }
-
-    static UpdateDyes(self) {
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = self;
-            player.UpdateDyes();
-        }
-    }
-
-    static Shoot(self, item, position, velocity, type, damage, knockback) {
-        let defaultResult = true;
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = self;
-            defaultResult &= player.Shoot(item, position, velocity, type, damage, knockback);
-        }
-
-        return defaultResult;
-    }
-
-    static OnHitNPC(self, item, target, damage, knockBack, crit) {
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = self;
-            player.OnHitNPC(item, target, damage, knockBack, crit);
-        }
-    }
-
-    static OnHitNPCWithProj(proj, target) {
-        if (proj.npcProj || proj.trap) {
-            return;
-        }
-        
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = Terraria.Main.player[proj.owner];
-            player.OnHitNPCWithProj(proj, target);
+    static OnMissingMana(player, item, neededMana) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.OnMissingMana(player, item, neededMana);
         }
     }
     
-    static PreKill(self, damage, hitDirection, pvp) {
-        let flag = true;
-
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = self;
-            flag &= player.PreKill(damage, hitDirection, pvp)
+    static ModifyManaCost(player, item, mana) {
+        let newValue = mana;
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.ModifyManaCost(player, item, newValue);
+            newValue = modPlayer?.ManaCost ?? newValue;
         }
-        
-        return flag;
+        return newValue;
     }
     
-    static Kill(self, damage, hitDirection, pvp, damageSource) {
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = self;
-            player.Kill(damage, hitDirection, pvp, damageSource)
+    static ModifyWeaponDamage(player, item, damage) {
+        let newValue = damage;
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.ModifyWeaponDamage(player, item, newValue);
+            newValue = modPlayer?.WeaponDamage ?? newValue;
+        }
+        return newValue;
+    }
+    
+    static ModifyWeaponKnockback(player, item, knockBack) {
+        let newValue = knockBack;
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.ModifyWeaponKnockback(player, item, newValue);
+            newValue = modPlayer?.WeaponKnockback ?? newValue;
+        }
+        return newValue;
+    }
+    
+    static CanShoot(player, item) {
+        if (this.RegisteredPlayers.some(mP => (mP?.CanShoot(player, item) ?? true) === false)) {
+            return false;
+        }
+        return true;
+    }
+    
+    static ModifyShootStats(player, stats) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.ModifyShootStats(player, stats);
         }
     }
     
-    static PreHurt(self, damageSource, pvp, quiet, modifier) {
-        let flag = true;
-        for (let player of ModPlayer.RegisteredPlayers) {
-            player.player = self;
-            if (!player.PreHurt(pvp, damageSource, quiet, modifier)) {
-                flag = false;
-            }
+    static Shoot(player, item, position, velocity, type, damage, knockBack) {
+        if (this.RegisteredPlayers.some(mP => (mP?.Shoot(player, item, position, velocity, type, damage, knockBack) ?? true) === false)) {
+            return false;
         }
-        return flag;
+        return true;
+    }
+    
+    static OnHitNPC(player, item, npc, damageDone, knockBack) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.OnHitNPC(player, item, npc, damageDone, knockBack);
+        }
+    }
+    
+    static OnHitNPCWithProj(player, npc, projectile) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.OnHitNPCWithProj(player, npc, projectile);
+        }
+    }
+    
+    static UpdateInventory(player) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.UpdateInventory(player);
+        }
+    }
+    
+    static UpdateEquips(player, item) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.UpdateEquips(player);
+        }
+    }
+    
+    static UpdateAccessory(player, item, vanity, hideVisual) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.UpdateAccessory(player, item, vanity, hideVisual);
+        }
+    }
+    
+    static UpdateDyes(player) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.UpdateDyes(player);
+        }
+    }
+    
+    static IsArmorSet(player, head, body, legs) {
+        if (this.RegisteredPlayers.some(mP => (mP?.IsArmorSet(player, head, body, legs) ?? false) === true)) {
+            return true;
+        }
+        return false;
+    }
+    
+    static UpdateArmorSet(player, item) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.UpdateArmorSet(player, item);
+        }
+    }
+    
+    static IsVanitySet(player, head, body, legs) {
+        if (this.RegisteredPlayers.some(mP => (mP?.IsVanitySet(player, head, body, legs) ?? false) === true)) {
+            return true;
+        }
+        return false;
+    }
+    
+    static UpdateVanitySet(player, item) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.UpdateVanitySet(player, item);
+        }
+    }
+    
+    static UpdateCamera(player) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.UpdateCamera(player);
+        }
+    }
+    
+    static UpdateMovement(player) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.UpdateMovement(player);
+        }
+    }
+    
+    static WingMovement(player, item) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.WingMovement(player, item);
+        }
+    }
+    
+    static CanPickup(player, item) {
+        if (this.RegisteredPlayers.some(mP => (mP?.CanPickup(player, item) ?? true) === false)) {
+            return false;
+        }
+        return true;
+    }
+    
+    static OnPickup(player, item) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.OnPickup(player, item);
+        }
+    }
+    
+    static ExtractinatorUse(player, item, extractType, extractinatorBlockType) {
+        if (this.RegisteredPlayers.some(mP => (mP?.ExtractinatorUse(player, item, extractType, extractinatorBlockType) ?? true) === false)) {
+            return false;
+        }
+        return true;
+    }
+    
+    static OnCraft(player, recipe) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.OnCraft(player, recipe);
+        }
+    }
+    
+    static PreModifyLuck(player, luck) {
+        if (this.RegisteredPlayers.some(mP => (mP?.PreModifyLuck(player, luck) ?? true) === false)) {
+            return false;
+        }
+        return true;
+    }
+    
+    static ModifyLuck(player, luck) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.ModifyLuck(player, luck);
+            luck = modPlayer?.Luck ?? luck;
+        }
+        player.luck = luck;
+    }
+    
+    static ImmuneTo(player, damageSource, cooldownCounter, dodgeable) {
+        if (this.RegisteredPlayers.some(mP => (mP?.ImmuneTo(player, damageSource, cooldownCounter, dodgeable) ?? false) === true)) {
+            return true;
+        }
+        return false;
+    }
+    
+    static FreeDodge(self, damageSource, damage, hitDirection, pvp, quiet, crit, cooldownCounter, dodgeable) {
+        if (this.RegisteredPlayers.some(mP => (mP?.FreeDodge(self, damageSource, damage, hitDirection, pvp, quiet, crit, cooldownCounter, dodgeable) ?? false) === true)) {
+            return true;
+        }
+        return false;
+    }
+    
+    static ModifyHurt(player, damage, hitDirection, quiet, crit, dodgeable) {
+        let modifiers = { damage, hitDirection, quiet, crit, dodgeable };
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.ModifyHurt(player, modifiers);
+        }
+        return modifiers;
+    }
+    
+    static OnHurt(player, damageSource, damage, hitDirection, pvp, quiet, crit, cooldownCounter, dodgeable) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.OnHurt(player, damageSource, damage, hitDirection, pvp, quiet, crit, cooldownCounter, dodgeable);
+        }
+    }
+    
+    static PostHurt(player, damageSource, damage, hitDirection, pvp, quiet, crit, cooldownCounter, dodgeable) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.PostHurt(player, damageSource, damage, hitDirection, pvp, quiet, crit, cooldownCounter, dodgeable);
+        }
+    }
+    
+    static PreKill(player, damageSource, damage, hitDirection, pvp) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.PreKill(player, damageSource, damage, hitDirection, pvp);
+        }
+    }
+    
+    static Kill(player, damageSource, damage, hitDirection, pvp) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.Kill(player, damageSource, damage, hitDirection, pvp);
+        }
+    }
+    
+    static GetDyeTraderReward(player, dyeTrader, rewardItems) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.GetDyeTraderReward(player, dyeTrader, rewardItems);
+        }
+    }
+    
+    static AnglerQuestReward(player, angler, questItemType) {
+        if (this.RegisteredPlayers.some(mP => (mP?.AnglerQuestReward(player, angler, questItemType) ?? true) === false)) {
+            return false;
+        }
+        return true;
+    }
+    
+    static CanSellItem(player, npc, shopInventory, item) {
+        if (this.RegisteredPlayers.some(mP => (mP?.CanSellItem(player, npc, shopInventory, item) ?? true) === false)) {
+            return false;
+        }
+        return true;
+    }
+    
+    static PostSellItem(player, npc, shopInventory, item) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.PostSellItem(player, npc, shopInventory, item);
+        }
+    }
+    
+    static SetupStartingItems(player, mediumCoreDeath = false) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.SetupStartingItems(player, mediumCoreDeath);
+        }
+    }
+    
+    static CanCatchNPC(player, npc, item) {
+        if (this.RegisteredPlayers.some(mP => (mP?.CanCatchNPC(player, npc, item) ?? true) === false)) {
+            return false;
+        }
+        return true;
+    }
+    
+    static OnCatchNPC(player, npc, item, failed) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.OnCatchNPC(player, npc, item, failed);
+        }
+    }
+    
+    static CanReleaseNPC(player, npcType, item, x, y) {
+        if (this.RegisteredPlayers.some(mP => (mP?.CanReleaseNPC(player, npcType, item, x, y) ?? true) === false)) {
+            return false;
+        }
+        return true;
+    }
+    
+    static OnReleaseNPC(player, npc) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.OnReleaseNPC(player, npc);
+        }
+    }
+    
+    static ModifyCaughtFish(player, itemType) {
+        let newType = itemType;
+        for (const modPlayer of this.RegisteredPlayers) {
+            newType = modPlayer?.ModifyCaughtFish(player, newType) ?? newType;
+        }
+        return newType ?? itemType;
+    }
+    
+    static ShouldDrawParts(player, parts) {
+        for (const modPlayer of this.RegisteredPlayers) {
+            modPlayer?.ShouldDrawParts(player, parts);
+        }
+    }
+    
+    static SendMessage(player, message) {
+        if (this.RegisteredPlayers.some(gP => (gP?.SendMessage(player, message) ?? true) === false)) {
+            return false;
+        }
+        return true;
     }
 }
