@@ -14,8 +14,6 @@ export class BrainEoc extends GlobalNPC {
     
         // BrainOfEoc
         if (npc.tyoe == 266) {
-            this.phase1 = 
-            
             
         }
         

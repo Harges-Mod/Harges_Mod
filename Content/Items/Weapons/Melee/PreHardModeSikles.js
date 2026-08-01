@@ -1,8 +1,5 @@
 GlobalImports.AllModules();
 
-
-const USETIME = 30
-
 export class CarminSikle extends ModItem {
     constructor() {
         super();
@@ -12,8 +9,8 @@ export class CarminSikle extends ModItem {
     SetDefaults() {
         this.Item.maxStack = ModItem.CommonMaxStack
          this.Item.shoot = ModProjectile.getTypeByName('CarminSikleProj')
-        this.Item.useTime = USETIME
-        this.Item.useAnimation = USETIME
+        this.Item.useTime = 30
+        this.Item.useAnimation = 30
         this.Item.useStyle = 1
     }
 }
@@ -27,8 +24,8 @@ export class CorruptionSikle extends ModItem {
     SetDefaults() {
         this.Item.maxStack = ModItem.CommonMaxStack
         // this.Item.shoot = ModProjectile.getTypeByName('CorruptionSikleProj')
-        this.Item.useTime = USETIME
-        this.Item.useAnimation = USETIME
+        this.Item.useTime = 30
+        this.Item.useAnimation = 30
         this.Item.useSytle = 1
     }
 }

@@ -10,7 +10,6 @@ const NewDust = Terraria.Dust['int NewDust(Vector2 Position, int Width, int Heig
 const NewCombatText = CombatText["int NewText(Rectangle location, Color color, string text, bool dramatic, bool dot)"];
 
 
-// Guardamos a chave única (owner + identity) para não ter colisão ao reusar slots de whoAmI
 const scaledProjectiles = new Set();
 
 export class HargesMMode extends ModPlayer {
@@ -32,6 +31,9 @@ export class HargesMMode extends ModPlayer {
         this._originalItemScale = null;
         this._lastItemType = null;
         
+        
+        
+        this.BloodAbstinence = false
         this.BloodyCover = false;
         this.BloodyCoverHealAmount = 3;
         this.BloodyCoverAbstinenceTimer = 0;
@@ -63,6 +65,8 @@ export class HargesMMode extends ModPlayer {
         this.SupremeRubyRadius = 400;
         
         this.BloodyCover = false;
+        this.BloodAbstinence = false
+        
         //this.BloodyCoverAbstinenceTimer = 0;
         //this.BloodyCoverDamageTimer = 0;
         //this.BloodyCoverHitCD = 0;
@@ -250,20 +254,27 @@ export class HargesMMode extends ModPlayer {
         } else {
             this.currentTarget = null;
         }
-
-        if (this.BloodyCover) {
-                this.BloodyCoverAbstinenceTimer++;
+        
+        if (this.BloodAbstinence) {
+            this.DebuffDamage(player, 10, false);
+            
+            for (let i = 0; i < 3; i++) {
+                Effects.QuickDust(player.Center.X, player.Center.Y, DustID.Blood);
+            }
                 
-                        if (player.lifeRegen > 0) player.lifeRegen = 0;
-        if (this.BloodyCoverAbstinenceTimer++ >= Generic.toSec(5)) {
-                this.DebuffDamage(player, 10, false);
-                for (let i = 0; i < 3; i++) {
-                    Effects.QuickDust(player.Center.X, player.Center.Y, DustID.Blood);
-                }
                 
         }
         
-        this.BloodyCoverHitCD++
+        if (this.BloodyCover) {
+            this.BloodyCoverAbstinenceTimer++;
+                    
+            if (player.lifeRegen > 0) player.lifeRegen = 0;
+            if (this.BloodyCoverAbstinenceTimer++ >= Generic.toSec(5)) {
+            
+                  player.AddBuff(ModBuff.getTypeByName('BloodAbstinence'), 60, false)   
+            }
+        
+            this.BloodyCoverHitCD++
         }
     }
     

@@ -1,6 +1,35 @@
 let DustID = Terraria.ID;
 
 using('Terraria');
+using('Terraria.Graphics.CameraModifiers')
+
+let PunchCameraNew = (startPosition, direction, strength) => {
+    try {
+        let modifier = new PunchCameraModifier(
+            startPosition,
+            direction,
+            parseFloat(strength),
+            10.0,
+            15, 
+            1.0,
+            "Locks"
+        );
+        return modifier;
+    } catch (e) {
+        let modifier = PunchCameraModifier.new();
+        modifier['void .ctor(Vector2 startPosition, Vector2 direction, float strength, float vibrationCyclesPerSecond, int frames, float distanceFalloff, string uniqueIdentity)'](
+            startPosition,
+            direction,
+            parseFloat(strength),
+            10.0,
+            15,
+            1.0,
+            "Locks"
+        );
+        return modifier;
+    }
+};
+
 
 GlobalImports.AllModules();
 
@@ -108,7 +137,6 @@ export class BloodScythe extends ModProjectile {
         return false;
     }
 }
-
 
 export class EocArena extends ModProjectile {
     constructor() {
@@ -244,6 +272,7 @@ export class EocArena extends ModProjectile {
         return false;
     }
 }
+
 export default class Eoc extends GlobalNPC {
     constructor() {
         super();
@@ -288,7 +317,13 @@ export default class Eoc extends GlobalNPC {
 
     SetDefaults(npc) {
         if (npc.type == 4) {
+        
+        
             let player = Main.player[0];
+            
+            let modifier= PunchCameraNew(player.Center, npc.Center, 10)
+            
+            
             this.oldLifeMax = npc.lifeMax;
             this.lastCalculatedLifeMax = npc.lifeMax;
             this.ArenaProjectileIndex = -1;
@@ -323,6 +358,7 @@ export default class Eoc extends GlobalNPC {
         }
 
         if (npc.type == 4) {
+            // Removido o fragmento quebrado que causava erro de sintaxe
             this.Init(npc, player);
             let arenaType = ModProjectile.getTypeByName("EocArena");
 
@@ -420,7 +456,10 @@ export default class Eoc extends GlobalNPC {
             } 
             else if (this.State === this.States.FinalBulletHell) {
                 this.stateTimer++;
-
+                
+                let modifier = PunchCameraNew(player.Center, npc.Center, 4)
+                Main.instance.CameraModifiers.Add(modifier);
+                
                 npc.dontTakeDamage = true;
                 npc.ai[1] = 0; // EOC Counter
                 npc.ai[2] = 0; // EOC Timer
