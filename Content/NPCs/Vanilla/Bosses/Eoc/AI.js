@@ -9,7 +9,7 @@ using('Terraria.Graphics.Shaders')
 
 GlobalImports.AllModules();
 
-tl.log(Object.keys(VertexStrip).join("\n"));
+// tl.log(Object.keys(VertexStrip).join("\n"));
 
 let PunchCameraNew = (startPosition, direction, strength) => {
     try {
