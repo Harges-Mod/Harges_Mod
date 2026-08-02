@@ -14,7 +14,7 @@ import { GoldShurikenProj } from '../Content/Projectiles/Weapons/Ranged/GoldShur
 
 import { PlatinumShurikenProj } from '../Content/Projectiles/Weapons/Ranged/PlatinumShurikenProj.js'
 
-import { CarminSikleProj } from '../Content/Projectiles/Weapons/Melee/PreHardModeSiklesProj.js'
+import { CarminSikleProj, CorruptionSikleProj } from '../Content/Projectiles/Weapons/Melee/PreHardModeSiklesProj.js'
 
 
 import { BloodOrb } from '../Content/Projectiles/BloodOrb.js'
@@ -30,5 +30,6 @@ export function RegisterProjectiles() {
     
     ModProjectile.register(BloodOrb);
     ModProjectile.register(CarminSikleProj);
+    ModProjectile.register(CorruptionSikleProj);
    
 }

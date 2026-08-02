@@ -8,12 +8,20 @@ export class CarminSikle extends ModItem {
     
     SetDefaults() {
         this.Item.maxStack = ModItem.CommonMaxStack
-         this.Item.shoot = ModProjectile.getTypeByName('CarminSikleProj')
+        this.Item.shoot = ModProjectile.getTypeByName('CarminSikleProj')
         this.Item.useTime = 30
+        this.Item.noUseGraphic = true;
+		this.Item.material = false;
+		this.Item.melee = true;
+		this.Item.noMelee = true;
         this.Item.useAnimation = 30
         this.Item.useStyle = 1
+        this.Item.knockBack = 3
+        this.Item.damage = 30
     }
 }
+
+// Full copy by CarminSikle
 
 export class CorruptionSikle extends ModItem {
     constructor() {
@@ -23,10 +31,15 @@ export class CorruptionSikle extends ModItem {
     
     SetDefaults() {
         this.Item.maxStack = ModItem.CommonMaxStack
-        // this.Item.shoot = ModProjectile.getTypeByName('CorruptionSikleProj')
+        this.Item.shoot = ModProjectile.getTypeByName('CorruptionSikleProj')
         this.Item.useTime = 30
+        this.Item.noUseGraphic = true;
+		this.Item.material = false;
+		this.Item.melee = true;
+		this.Item.noMelee = true;
         this.Item.useAnimation = 30
-        this.Item.useSytle = 1
+        this.Item.useStyle = 1
+        this.Item.damage = 30
     }
 }
 

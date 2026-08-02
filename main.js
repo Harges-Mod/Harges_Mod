@@ -8,6 +8,8 @@ import './lib/_StateMachine.js'
 import './lib/_ModClasses.js'
 import './lib/_HookInvoker.js'
 
+// Harges Mod.
+import './Core/Harges.js'
 
 import { RegisterAll } from './Register/RegisterAll.js';
 import { SystemLoader } from './TL/Loaders/SystemLoader.js';

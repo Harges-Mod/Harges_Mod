@@ -300,8 +300,11 @@ export class MainHooks {
             ].hook((original, self) => {
                 original(self);
                 PlayerLoader.UpdateCamera();
-                CameraShake.Update();
+                
                 NPCLoader.UpdateCamera(ModNPC._CachedForAI)
+                
+                // Post NPC changes.
+                CameraShake.Update();
             });
         }
         
