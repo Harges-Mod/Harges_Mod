@@ -18,6 +18,9 @@ import SlimeKing from '../Content/NPCs/Vanilla/Bosses/KingSlime/AI.js'
 
 import Eoc from '../Content/NPCs/Vanilla/Bosses/Eoc/AI.js'
 
+import BrainOfEoc from '../Content/NPCs/Vanilla/Bosses/BrainOfEoc/AI.js'
+
+import Skltrom from '../Content/NPCs/Vanilla/Bosses/Skltrom/AI.js'
 
 import { SlimesOverride } from './../Content/NPCs/Global/SlimesOverride.js'
 
@@ -40,6 +43,10 @@ export function RegisterGlobal() {
     GlobalNPC.register(MModeGlobalNPC)
     GlobalNPC.register(SlimeKing)
     GlobalNPC.register(Eoc)
+    GlobalNPC.register(BrainOfEoc)
+    GlobalNPC.register(Skltrom)
+  
+    
     GlobalLoot.register(VanillaLoot)
     GlobalNPC.register(SlimesOverride)
 }

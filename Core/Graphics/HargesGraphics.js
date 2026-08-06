@@ -1,6 +1,9 @@
-
+import UParticle from './UParticle.js'
 
 export class HargesGraphics {
+    
+    UParticle = UParticle
+
     
     PrettySparkle(pos, velocity, color, scale, timeToLive = 60, rotation = 0) {
 		const particle = Terraria.GameContent.Drawing.ParticleOrchestrator._poolPrettySparkle.RequestParticle();

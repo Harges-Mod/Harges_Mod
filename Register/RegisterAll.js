@@ -36,7 +36,7 @@ export function RegisterAll() {
     //RegisterSubworlds(); // 9
     //RegisterHairs(); // 10
    // RegisterMounts(); // 11
-    RegisterAchievements(); // 12
+    //RegisterAchievements(); // 12
     
     // Finally, register the global content
     RegisterGlobal();

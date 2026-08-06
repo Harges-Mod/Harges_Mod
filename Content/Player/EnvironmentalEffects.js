@@ -26,7 +26,7 @@ export class EnvironmentalEffects extends ModPlayer {
 
     UpdateEquips(player) {
                 
-        this.PlayerDebuffBiomeLogic(player)
+        // this.PlayerDebuffBiomeLogic(player)
         if (!ModPlayer.Get('HargesMMode').mModeLocalActive) return
         
         this.InfinityBuffInventory(player, 30)

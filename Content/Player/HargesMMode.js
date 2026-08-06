@@ -55,6 +55,26 @@ export class HargesMMode extends ModPlayer {
     }
     
     ResetEffects(player) {
+    
+        // Debug 
+        /*if (Main.GameUpdateCount % 160 === 0) {
+                            
+                    Harges.Graphics.UParticle.Spawn(
+        Harges.Assets.Loader.Load('Assets/Adittive/Shine.png'),
+        player.Center,
+        Vector2.Zero, {
+            rotVel: 0.05,
+            scaleFrom: Vector2.new(0.2, 0.2),
+            scaleTo: Vector2.new(0.2, 0.8),
+            life: 120,
+            
+            colorFrom: Color.Red,
+            //colorTo: Color.Blue,
+            
+            additive: true,
+            layer: 1
+        });*/
+       
         if (Main.GameUpdateCount % 60 === 0) {
             this.mModeLocalActive = HargesMMode.MModeActivated;
         }
@@ -214,7 +234,29 @@ export class HargesMMode extends ModPlayer {
         
         if (this.RubyFlame && !this.SupremeRuby) {
             if (Rand.NextBool(3)) {
-                Effects.NewDust(player.Center, 0, 0, DustID.GemRuby);
+            
+                // Not change visually lol
+                let GetRandomParticle = ['fire_01', 'fire_02'];
+                
+                let particle = GetRandomParticle[(Math.random() * GetRandomParticle.length) | 0];
+                
+                // Mega Effect of Fire 
+                Harges.Graphics.UParticle.Spawn(
+                    Harges.Assets.Loader.Load(`Assets/Adittive/${particle}.png`),
+                    player.Center,
+                    Vector2.new(Math.random() * 0.2 * Rand.NextSign(), -1), {
+                        rot: 0,
+                        scaleFrom: Vector2.new(0.1, 0.1),
+                        scaleTo: Vector2.new(0.05, 0.05),
+                        life: 30,
+                        colorFrom: Color.Red,
+                        colorTo: Color.Pink,
+                        additive: true,
+                        layer: 1
+                    }
+                );
+                // Old   
+                //Effects.NewDust(player.Center, 0, 0, DustID.GemRuby);
             }
             this.DebuffDamage(player, 8, false);
         }
@@ -259,6 +301,8 @@ export class HargesMMode extends ModPlayer {
             this.DebuffDamage(player, 10, false);
             
             for (let i = 0; i < 3; i++) {
+            
+
                 Effects.QuickDust(player.Center.X, player.Center.Y, DustID.Blood);
             }
                 
@@ -270,7 +314,6 @@ export class HargesMMode extends ModPlayer {
                     
             if (player.lifeRegen > 0) player.lifeRegen = 0;
             if (this.BloodyCoverAbstinenceTimer++ >= Generic.toSec(5)) {
-            
                   player.AddBuff(ModBuff.getTypeByName('BloodAbstinence'), 60, false)   
             }
         

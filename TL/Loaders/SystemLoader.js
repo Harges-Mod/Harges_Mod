@@ -26,6 +26,18 @@ export class SystemLoader {
         }
     }
     
+    static DrawBehindEntity() {
+        for (const system of this.RegisteredSystems) {
+            system?.DrawBehindEntity();
+        }
+    }
+    
+    static DrawPostEntity() {
+        for (const system of this.RegisteredSystems) {
+            system?.DrawPostEntity();
+        }
+    }
+    
     static OnLocalizationsLoaded() {
         for (const system of this.RegisteredSystems) {
             system?.OnLocalizationsLoaded();
