@@ -13,7 +13,37 @@ export class Generic {
         return d /** Main.GameMode + 1;*/
     }
     
-    
+    static PunchCameraNew = (startPosition, direction, strength) => {
+    try {
+        let modifier = PunchCameraModifier.new();
+        modifier[
+            "void .ctor(Vector2 startPosition, Vector2 direction, float strength, float vibrationCyclesPerSecond, int frames, float distanceFalloff, string uniqueIdentity)"
+        ](
+            startPosition,
+            direction,
+            parseFloat(strength),
+            10.0,
+            15,
+            1.0,
+            "Locks"
+        );
+        return modifier;
+    } catch (e) {
+        let modifier = PunchCameraModifier.new()[
+            "void .ctor(Vector2 startPosition, Vector2 direction, float strength, float vibrationCyclesPerSecond, int frames, float distanceFalloff, string uniqueIdentity)"
+        ](
+            startPosition,
+            direction,
+            parseFloat(strength),
+            10.0,
+            15,
+            1.0,
+            "Locks"
+        );
+        return modifier;
+    }
+};
+
     
     static dropItem = (condition, entity, Type, stack) => {
     

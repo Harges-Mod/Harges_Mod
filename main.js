@@ -7,6 +7,7 @@ import './lib/_BitWiseHelper.js'
 import './lib/_StateMachine.js'
 import './lib/_ModClasses.js'
 import './lib/_HookInvoker.js'
+// import './lib/_AutoWrapper.js'
 
 // Harges Mod.
 import './Core/Harges.js'

@@ -1,32 +1,23 @@
-let DustID = Terraria.ID;
+const DustID = Terraria.ID;
 
 using('Terraria');
-
 GlobalImports.AllModules();
 
-export class BrainEoc extends GlobalNPC {
+export default class BrainOfEoc extends GlobalNPC {
     constructor() {
-        super();;
+        super();
+        
+
+        this.initialized = false;
     }
-    
-    
+        
     AI(npc) {
-    
-        // BrainOfEoc
-        if (npc.tyoe == 266) {
+        if (npc.type === 266) {
+        
+        
             
         }
-        
-        // Creeper
-        if (npc.tyle == 267) {
-        
-        }
     }
     
-    OnTeleport() {
-        
-    }
-    
+    OnTeleport() {}
 }
-
-

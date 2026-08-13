@@ -36,6 +36,16 @@ export class BloodOrb extends ModProjectile {
         ai[0]++;
         ai[1]++;
         
+        
+        if (ai[0] % 2 == 0) {
+       	Harges.Graphics.UParticleHelper.SimulateMetaBall({
+            center: proj.Center,
+            baseSizePx: 32,
+            color: Harges.Graphics.UParticleHelper.BallColor(Color.Red, Color.Red),
+            count: 2
+        });
+        }
+        
         if (ai[0] === 1) {
             this.basePosition = Vector2.new(proj.Center.X, proj.Center.Y);
         }
@@ -102,29 +112,6 @@ export class BloodOrb extends ModProjectile {
         let halfWidth = proj.width / 2;
         let halfHeight = proj.height / 2;
 
-        for (let i = 0; i < trailLen; i++) {
-            let oldPos = proj.oldPos[i];
-            
-            if (!oldPos || (oldPos.X === 0 && oldPos.Y === 0)) continue;
-
-            let pos = Vector2.Subtract(oldPos, Main.screenPosition);
-            pos.X += halfWidth;
-            pos.Y += halfHeight;
-            
-            let alpha = (1 - (i / trailLen)) * 0.7;
-
-            Generic.EntityDraw(
-                tex,
-                pos,
-                rect,
-                Color.Multiply(Color.new(Color.Red.R, Color.Red.G, Color.Red.B, 0), alpha),
-                proj.rotation,
-                origin,
-                this.scaleVector,
-                SpriteEffects.None
-            );
-        }
-
         // Orb principal
         Generic.EntityDraw(
             tex,
@@ -136,6 +123,8 @@ export class BloodOrb extends ModProjectile {
             this.scaleVector,
             SpriteEffects.None
         );
+       
+        
 
         return false;
     }

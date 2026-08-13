@@ -1,7 +1,12 @@
 import { SystemLoader } from './Loaders/SystemLoader.js';
 
 export class ModSystem {
-    constructor() {}
+
+    static instance = []
+    
+    constructor() {
+        return ModSystem.instance.push(this)
+    }
     
     OnModLoad() {}
     
@@ -28,6 +33,11 @@ export class ModSystem {
     OnStartDay() {}
     
     OnStartNight() {}
+    
+    DrawBehindEntity() {}    
+    
+    DrawPostEntity() {}
+    
     
     PostDrawInterface() {}
     

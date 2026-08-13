@@ -3,6 +3,14 @@ using("Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics");
 const { Vector2, Color } = Modules;
 const { Main } = Terraria;
 
+// Panel Data
+const GUIPanel = new NativeClass('', 'GUIPanel');
+const PanelLayout = new NativeClass('', 'Panel_Layout');
+const LayoutCalculator = new NativeClass('', 'LayoutCalculator');
+
+const RegisterPickingRegion = GUIPanel['bool RegisterPickingRegion(Panel_Layout layout)'];
+
+
 export class BaseUIButton {
     static registry = new Set();
     static isScreenTouched = false;
@@ -31,6 +39,12 @@ export class BaseUIButton {
         this.isHovered = false;
         this.isPressed = false;
         this.isActive = false;
+     
+       	// Uses Painel to Calculate the real Output of Click
+        // Now is a Real Button
+        this.panelLayout = PanelLayout.new();
+        this.panelLayout['void .ctor()']();
+        this.panelLayout.Anchor = LayoutCalculator.AnchorType.TopLeft;
     }
 
     loadTexture() {
@@ -56,6 +70,20 @@ export class BaseUIButton {
         return Vector2.new(this.positionX * scale, (this.positionY + offsetY) * scale);
     }
 
+    /**
+     * Registra a hitbox atual como região de UI no motor mobile, pra esse
+     * toque não vazar pro joystick/câmera embaixo.
+     */
+    registerPickingRegion(originX, originY, width, height) {
+        try {
+            this.panelLayout.Location = Vector2.new(Math.round(originX), Math.round(originY));
+            this.panelLayout.Size = Vector2.new(Math.round(width), Math.round(height));
+            RegisterPickingRegion(this.panelLayout);
+        } catch (_) {
+            // Se falhar num frame, tenta de novo no próximo.
+        }
+    }
+
     updateHoverState(drawPosition) {
         if (!this.texture) return false;
 
@@ -74,7 +102,14 @@ export class BaseUIButton {
             Math.round(height)
         );
 
-        this.isHovered = bounds['bool Contains(int x, int y)'](Main.worldMouseX, Main.worldMouseY);
+        this.registerPickingRegion(originX, originY, width, height);
+
+        // Calcs basead on mouseX and mouseY
+        // Real Screen Position not WolrdMouse position.
+        this.isHovered = bounds['bool Contains(int x, int y)'](
+            Math.round(Main.mouseX),
+            Math.round(Main.mouseY)
+        );
         return this.isHovered;
     }
 

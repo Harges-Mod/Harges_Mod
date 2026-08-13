@@ -3,6 +3,9 @@ import { PlayerLoader } from './../Loaders/PlayerLoader.js';
 import { BuffLoader } from './../Loaders/BuffLoader.js';
 import { NPCLoader } from './../Loaders/NPCLoader.js';
 import { CombinedLoader } from './../Loaders/CombinedLoader.js';
+
+import { SystemLoader } from './../Loaders/SystemLoader.js';
+
 import { NPCSpawnInfo } from './../NPCSpawnInfo.js';
 
 const NewText = Terraria.Main['void NewText(string newText, byte R, byte G, byte B)'];
@@ -125,6 +128,10 @@ export class NPCHooks {
         if (this.HookList.DrawNPCs(info)) {
             Terraria.Main['void DrawNPCs(bool behindTiles)'
             ].hook((original, self, behindTiles) => {
+            
+                // Uparticle System
+                
+                
                 original(self, behindTiles);
 
                 let drawNpcs = [];

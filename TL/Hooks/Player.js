@@ -125,9 +125,13 @@ export class PlayerHooks {
         
         Terraria.Graphics.Renderers.LegacyPlayerRenderer["void DrawPlayerFull(Camera camera, Player drawPlayer)"].hook(
       (original, self, camera, drawPlayer) => {
+       
+        SystemLoader.DrawBehindEntity()
+        
        original(self, camera, drawPlayer);
-
-                
+       
+        // Uparticle System
+        SystemLoader.DrawPostEntity()
        
     })
     

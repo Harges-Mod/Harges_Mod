@@ -1,6 +1,13 @@
+import CameraFX from './CameraFX.js'
+import UParticle from './UParticle.js'
+import UParticleHelper from './UParticleHelper.js'
 
 
 export class HargesGraphics {
+    
+    UParticleHelper = UParticleHelper
+    UParticle = UParticle
+    CameraFX = CameraFX
     
     PrettySparkle(pos, velocity, color, scale, timeToLive = 60, rotation = 0) {
 		const particle = Terraria.GameContent.Drawing.ParticleOrchestrator._poolPrettySparkle.RequestParticle();

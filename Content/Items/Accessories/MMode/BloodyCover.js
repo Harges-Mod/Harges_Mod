@@ -1,7 +1,7 @@
 export class BloodyCover extends ModItem{
         constructor() {
             super()
-            this.Texture = "Textures/Items/Accessories/MMode/"+this.constructor.name
+            this.Texture = "Items/Accessories/MMode/"+this.constructor.name
         }
         
         SetDefaults() {

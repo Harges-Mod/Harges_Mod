@@ -312,8 +312,8 @@ export class ItemLoader {
     }
     
     static SetupTextures(item) {
-        if (!item.Texture?.startsWith('Textures/')) {
-            item.Texture = 'Textures/' + item.Texture;
+        if (!item.Texture?.startsWith('Content/')) {
+            item.Texture = 'Content/' + item.Texture;
         }
         
         const itemTexture = new ModTexture(item.Texture, item.horizontalFrames, item.frameCount, item.ticksPerFrame);

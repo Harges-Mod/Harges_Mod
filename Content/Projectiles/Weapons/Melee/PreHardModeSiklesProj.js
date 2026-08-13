@@ -1,11 +1,13 @@
-using('Terraria');
+using("Terraria");
 
 const { SpriteEffects } = Microsoft.Xna.Framework.Graphics;
 
-let canHit = Collision['bool CanHit(Vector2 Position1, int Width1, int Height1, Vector2 Position2, int Width2, int Height2)'];
+let canHit =
+    Collision[
+        "bool CanHit(Vector2 Position1, int Width1, int Height1, Vector2 Position2, int Width2, int Height2)"
+    ];
 
 export class CarminSikleProj extends ModProjectile {
-
     static SWINGRANGE = 1.67 * Math.PI;
     static FIRSTHALFSWING = 0.45;
     static SPINRANGE = 3.5 * Math.PI;
@@ -15,11 +17,12 @@ export class CarminSikleProj extends ModProjectile {
 
     constructor() {
         super();
-        this.Texture = 'Projectiles/Weapons/Melee/' + this.constructor.name;
+        this.Texture = "Projectiles/Weapons/Melee/" + this.constructor.name;
     }
 
     SetStaticDefaults() {
-        this.TextureAsset = Terraria.GameContent.TextureAssets.Projectile[this.Type].Value;
+        this.TextureAsset =
+            Terraria.GameContent.TextureAssets.Projectile[this.Type].Value;
     }
 
     SetDefaults() {
@@ -30,9 +33,11 @@ export class CarminSikleProj extends ModProjectile {
         proj.friendly = true;
         proj.timeLeft = 10000;
         proj.penetrate = -1;
-        proj.knockBack = Main.player[0].HeldItem.knockBack;
+        proj.knockBack = Main.player[0].HeldItem
+            ? Main.player[0].HeldItem.knockBack
+            : 0;
 
-        // Propriedades para garantir que a parede não mate o projétil
+        // Atravessar paredes
         proj.tileCollide = false;
         proj.ignoreWater = true;
 
@@ -48,7 +53,6 @@ export class CarminSikleProj extends ModProjectile {
         this.PrevRotation = 0;
     }
 
-    // Retornar false aqui força a engine a ignorar a colisão física com blocos
     OnTileCollide(proj, oldVelocity) {
         return false;
     }
@@ -57,7 +61,8 @@ export class CarminSikleProj extends ModProjectile {
         let proj = this.Projectile;
         let owner = Main.player[0];
 
-        proj.spriteDirection = Main.MouseWorld.X > owner.MountedCenter.X ? 1 : -1;
+        proj.spriteDirection =
+            Main.MouseWorld.X > owner.MountedCenter.X ? 1 : -1;
 
         let targetAngle = Math.atan2(
             Main.MouseWorld.Y - owner.MountedCenter.Y,
@@ -65,18 +70,29 @@ export class CarminSikleProj extends ModProjectile {
         );
 
         if (this.CurrentAttack === 1) {
-            this.InitialAngle = -Math.PI / 2 - Math.PI * (1 / 3) * proj.spriteDirection;
+            this.InitialAngle =
+                -Math.PI / 2 - Math.PI * (1 / 3) * proj.spriteDirection;
         } else {
             if (proj.spriteDirection === 1) {
-                targetAngle = Math.max(-Math.PI * (1 / 3), Math.min(Math.PI * (1 / 6), targetAngle));
+                targetAngle = Math.max(
+                    -Math.PI * (1 / 3),
+                    Math.min(Math.PI * (1 / 6), targetAngle)
+                );
             } else {
                 if (targetAngle < 0) {
                     targetAngle += 2 * Math.PI;
                 }
-                targetAngle = Math.max(Math.PI * (5 / 6), Math.min(Math.PI * (4 / 3), targetAngle));
+                targetAngle = Math.max(
+                    Math.PI * (5 / 6),
+                    Math.min(Math.PI * (4 / 3), targetAngle)
+                );
             }
 
-            this.InitialAngle = targetAngle - CarminSikleProj.FIRSTHALFSWING * CarminSikleProj.SWINGRANGE * proj.spriteDirection;
+            this.InitialAngle =
+                targetAngle -
+                CarminSikleProj.FIRSTHALFSWING *
+                    CarminSikleProj.SWINGRANGE *
+                    proj.spriteDirection;
         }
     }
 
@@ -92,11 +108,14 @@ export class CarminSikleProj extends ModProjectile {
             return;
         }
 
-        let attackSpeed = owner.GetTotalAttackSpeed ? owner.GetTotalAttackSpeed(proj.DamageType) : 1;
+        let attackSpeed = owner.GetTotalAttackSpeed
+            ? owner.GetTotalAttackSpeed(proj.DamageType)
+            : 1;
         let prepTime = 12 / attackSpeed;
         let execTime = 12 / attackSpeed;
         let hideTime = 12 / attackSpeed;
 
+        // Fases do ataque
         switch (this.CurrentStage) {
             case 0:
                 this.PrepareStrike(prepTime);
@@ -114,7 +133,10 @@ export class CarminSikleProj extends ModProjectile {
     }
 
     PrepareStrike(prepTime) {
-        this.Progress = CarminSikleProj.WINDUP * CarminSikleProj.SWINGRANGE * (1 - this.Timer / prepTime);
+        this.Progress =
+            CarminSikleProj.WINDUP *
+            CarminSikleProj.SWINGRANGE *
+            (1 - this.Timer / prepTime);
 
         let t = this.Timer / prepTime;
         this.Size = t * t * (3 - 2 * t);
@@ -135,7 +157,9 @@ export class CarminSikleProj extends ModProjectile {
                 this.Timer = 0;
             }
         } else {
-            let t = (1 - CarminSikleProj.UNWIND / 2) * (this.Timer / (execTime * CarminSikleProj.SPINTIME));
+            let t =
+                (1 - CarminSikleProj.UNWIND / 2) *
+                (this.Timer / (execTime * CarminSikleProj.SPINTIME));
             this.Progress = t * t * (3 - 2 * t) * CarminSikleProj.SPINRANGE;
 
             if (this.Timer >= execTime * CarminSikleProj.SPINTIME) {
@@ -147,24 +171,30 @@ export class CarminSikleProj extends ModProjectile {
 
     UnwindStrike(projectile, hideTime) {
         if (this.CurrentAttack === 0) {
-            let t = (1 - CarminSikleProj.UNWIND) + (CarminSikleProj.UNWIND * this.Timer / hideTime);
+            let t =
+                1 -
+                CarminSikleProj.UNWIND +
+                (CarminSikleProj.UNWIND * this.Timer) / hideTime;
             let smoothProgress = t * t * (3 - 2 * t);
             this.Progress = CarminSikleProj.SWINGRANGE * smoothProgress;
 
             let sizeT = this.Timer / hideTime;
-            this.Size = 1 - (sizeT * sizeT * (3 - 2 * sizeT));
+            this.Size = 1 - sizeT * sizeT * (3 - 2 * sizeT);
 
             if (this.Timer >= hideTime) {
                 projectile.Kill();
             }
         } else {
-            let spinHideTime = hideTime * CarminSikleProj.SPINTIME / 2;
-            let t = (1 - CarminSikleProj.UNWIND / 2) + ((CarminSikleProj.UNWIND / 2) * this.Timer / spinHideTime);
+            let spinHideTime = (hideTime * CarminSikleProj.SPINTIME) / 2;
+            let t =
+                1 -
+                CarminSikleProj.UNWIND / 2 +
+                ((CarminSikleProj.UNWIND / 2) * this.Timer) / spinHideTime;
             let smoothProgress = t * t * (3 - 2 * t);
             this.Progress = CarminSikleProj.SPINRANGE * smoothProgress;
 
             let sizeT = this.Timer / spinHideTime;
-            this.Size = 1 - (sizeT * sizeT * (3 - 2 * sizeT));
+            this.Size = 1 - sizeT * sizeT * (3 - 2 * sizeT);
 
             if (this.Timer >= spinHideTime) {
                 projectile.Kill();
@@ -173,15 +203,23 @@ export class CarminSikleProj extends ModProjectile {
     }
 
     SetSwordPosition(owner, proj) {
-        proj.rotation = this.InitialAngle + proj.spriteDirection * this.Progress;
+        proj.rotation =
+            this.InitialAngle + proj.spriteDirection * this.Progress;
 
-        let armAngle = proj.rotation - (Math.PI / 2);
+        let armAngle = proj.rotation - Math.PI / 2;
 
         if (owner.SetCompositeArmFront) {
-            owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, armAngle);
+            owner.SetCompositeArmFront(
+                true,
+                Player.CompositeArmStretchAmount.Full,
+                armAngle
+            );
         }
 
-        let armPosition = owner.GetFrontHandPosition(Player.CompositeArmStretchAmount.Full, armAngle);
+        let armPosition = owner.GetFrontHandPosition(
+            Player.CompositeArmStretchAmount.Full,
+            armAngle
+        );
 
         if (owner.gravDir === -1) {
             proj.rotation = -proj.rotation;
@@ -190,7 +228,8 @@ export class CarminSikleProj extends ModProjectile {
 
         armPosition.Y += owner.gfxOffY;
         proj.Center = armPosition;
-        proj.scale = this.Size * 0.7 * owner.GetAdjustedItemScale(owner.HeldItem);
+        proj.scale =
+            this.Size * 0.7 * owner.GetAdjustedItemScale(owner.HeldItem);
         owner.heldProj = proj.whoAmI;
     }
 
@@ -211,20 +250,18 @@ export class CarminSikleProj extends ModProjectile {
             effects = SpriteEffects.FlipHorizontally;
         }
 
-        let maxRange = (this.CurrentAttack === 1) ? CarminSikleProj.SPINRANGE : CarminSikleProj.SWINGRANGE;
+        let maxRange =
+            this.CurrentAttack === 1
+                ? CarminSikleProj.SPINRANGE
+                : CarminSikleProj.SWINGRANGE;
         let progressFactor = Math.max(0, Math.min(1, this.Progress / maxRange));
 
         let fadeFactor = Math.pow(progressFactor, 4);
         let baseColor = Color.White;
-        let drawColor = Color.Lerp(baseColor, Color.Transparent, fadeFactor);
 
-        let stretchX = 1 + 0.3 * progressFactor;
         let stretchY = 1 - 0.2 * progressFactor;
 
-        let scaleVector = Vector2.new(
-            proj.scale,
-            proj.scale * stretchY
-        );
+        let scaleVector = Vector2.new(proj.scale, proj.scale /* * stretchy*/);
 
         Generic.EntityDraw(
             this.TextureAsset,
@@ -241,13 +278,18 @@ export class CarminSikleProj extends ModProjectile {
     }
 
     ModifyDamageHitbox(proj, hitbox) {
-        // Erro de sintaxe corrigido nesta linha
         if (this.Size < 0.1 || this.CurrentStage !== 1) return;
 
-        let rotationOffset = proj.spriteDirection > 0 ? (45 * Math.PI) / 180 : (135 * Math.PI) / 180;
+        let rotationOffset =
+            proj.spriteDirection > 0
+                ? (45 * Math.PI) / 180
+                : (135 * Math.PI) / 180;
         let visualAngle = proj.rotation + rotationOffset;
 
-        let maxRange = (this.CurrentAttack === 1) ? CarminSikleProj.SPINRANGE : CarminSikleProj.SWINGRANGE;
+        let maxRange =
+            this.CurrentAttack === 1
+                ? CarminSikleProj.SPINRANGE
+                : CarminSikleProj.SWINGRANGE;
         let progressFactor = Math.max(0, Math.min(1, this.Progress / maxRange));
         let stretchX = 1 + 0.3 * progressFactor;
         let textureLength = 132;
@@ -269,74 +311,71 @@ export class CarminSikleProj extends ModProjectile {
         hitbox.Width = Math.floor(maxX - minX);
         hitbox.Height = Math.floor(maxY - minY);
     }
-    
-    // Doesn't Working.
-    /*Colliding(proj, projHitbox, targetHitbox) {
-        if (this.Size < 0.1 || this.CurrentStage !== 1) return false;
 
-        let rotationOffset = proj.spriteDirection > 0 ? (45 * Math.PI) / 180 : (135 * Math.PI) / 180;
-        let visualAngle = proj.rotation + rotationOffset;
-        let prevVisualAngle = this.PrevRotation + rotationOffset;
+    // Colisão personalizada de feixe (Raycast / Line Intersects AABB)
+    Colliding(proj, projHitbox, targetHitbox) {
+        // Apenas causa dano na fase de execução
+        if (this.Size < 0.1 || this.CurrentStage !== 1) {
+            return false;
+        }
 
-        let deltaAngle = visualAngle - prevVisualAngle;
-        while (deltaAngle > Math.PI) deltaAngle -= 2 * Math.PI;
-        while (deltaAngle < -Math.PI) deltaAngle += 2 * Math.PI;
+        let tipPosition = this.GetTipPosition(proj);
+        let collisionWidth = 32 * proj.scale; // Espessura da lâmina
+        let collisionPoint = { X: 0, Y: 0 };
 
-        let maxRange = (this.CurrentAttack === 1) ? CarminSikleProj.SPINRANGE : CarminSikleProj.SWINGRANGE;
-        let progressFactor = Math.max(0, Math.min(1, this.Progress / maxRange));
-        let stretchX = 1 + 0.3 * progressFactor;
-        let textureLength = 132;
-        let swordLength = textureLength * proj.scale * stretchX;
-        let bladeRadius = 24 * proj.scale;
+        let hitsTarget = Collision.CheckAABBvLine1(
+            targetHitbox.TopLeft,
+            targetHitbox.Size(),
+            proj.Center,
+            tipPosition,
+            collisionWidth,
+            collisionPoint
+        );
 
-        let startX = proj.Center.X;
-        let startY = proj.Center.Y;
+        if (hitsTarget) {
+            if (canHit) {
+                let owner = Main.player[proj.owner];
+                let contactVector = Vector2.new(
+                    collisionPoint.X,
+                    collisionPoint.Y
+                );
 
-        let targetCenterX = targetHitbox.X + targetHitbox.Width / 2;
-        let targetCenterY = targetHitbox.Y + targetHitbox.Height / 2;
-        let targetRadius = Math.max(targetHitbox.Width, targetHitbox.Height) / 2;
-        let collisionRadius = bladeRadius + targetRadius;
-
-        const SAMPLES = 6;
-        for (let i = 0; i <= SAMPLES; i++) {
-            let angle = prevVisualAngle + deltaAngle * (i / SAMPLES);
-            let cos = Math.cos(angle);
-            let sin = Math.sin(angle);
-
-            let dx = targetCenterX - startX;
-            let dy = targetCenterY - startY;
-            let projection = Math.min(Math.max(dx * cos + dy * sin, 0), swordLength);
-
-            let closestX = startX + cos * projection;
-            let closestY = startY + sin * projection;
-            let diffX = targetCenterX - closestX;
-            let diffY = targetCenterY - closestY;
-            let distanceSquared = diffX * diffX + diffY * diffY;
-
-            if (distanceSquared <= collisionRadius * collisionRadius) {
-                if (canHit) {
-                    let owner = Main.player[proj.owner];
-                    let contactPoint = Vector2.new(closestX, closestY);
-                    
-                    // Verificação fina: Tenta traçar uma linha do jogador ao ponto da arma.
-                    // Se a parede bloquear essa visão, o dano é negado, ignorando o inimigo.
-                    if (!canHit(owner.Center, 1, 1, contactPoint, 1, 1)) {
-                        continue;
-                    }
+                if (!canHit(owner.Center, 1, 1, contactVector, 1, 1)) {
+                    return false; // Parede bloqueia o golpe
                 }
-                return true;
             }
+            return true;
         }
 
         return false;
-    }*/ 
+    }
+
+    OnHitNPC(proj, target) {
+for (let i=0;i<2;i++) {
+        Harges.Graphics.UParticle.Spawn(
+            Harges.Assets.Loader.Load("Assets/Adittive/Shine.png"),
+            target.Center,
+            Vector2.Zero,
+            {
+                life: 30,
+                rot: (Math.random() - 0.5) * 2 * Math.PI,
+                scaleTo: Vector2.new(0.04, 0.04),
+                scaleFrom: Vector2.new(0.2, 0.4),
+                colorFrom: Color.Red,
+                colorTo: Color.Purple,
+                additive: true,
+                layer: 1
+            }
+        );
+}
+    }
+
     OnKill(proj, timeLeft) {}
 }
 
 // Full copy by CarminSikleProj
 
 export class CorruptionSikleProj extends ModProjectile {
-
     static SWINGRANGE = 1.67 * Math.PI;
     static FIRSTHALFSWING = 0.45;
     static SPINRANGE = 3.5 * Math.PI;
@@ -346,11 +385,12 @@ export class CorruptionSikleProj extends ModProjectile {
 
     constructor() {
         super();
-        this.Texture = 'Projectiles/Weapons/Melee/' + this.constructor.name;
+        this.Texture = "Projectiles/Weapons/Melee/" + this.constructor.name;
     }
 
     SetStaticDefaults() {
-        this.TextureAsset = Terraria.GameContent.TextureAssets.Projectile[this.Type].Value;
+        this.TextureAsset =
+            Terraria.GameContent.TextureAssets.Projectile[this.Type].Value;
     }
 
     SetDefaults() {
@@ -388,7 +428,8 @@ export class CorruptionSikleProj extends ModProjectile {
         let proj = this.Projectile;
         let owner = Main.player[0];
 
-        proj.spriteDirection = Main.MouseWorld.X > owner.MountedCenter.X ? 1 : -1;
+        proj.spriteDirection =
+            Main.MouseWorld.X > owner.MountedCenter.X ? 1 : -1;
 
         let targetAngle = Math.atan2(
             Main.MouseWorld.Y - owner.MountedCenter.Y,
@@ -396,18 +437,29 @@ export class CorruptionSikleProj extends ModProjectile {
         );
 
         if (this.CurrentAttack === 1) {
-            this.InitialAngle = -Math.PI / 2 - Math.PI * (1 / 3) * proj.spriteDirection;
+            this.InitialAngle =
+                -Math.PI / 2 - Math.PI * (1 / 3) * proj.spriteDirection;
         } else {
             if (proj.spriteDirection === 1) {
-                targetAngle = Math.max(-Math.PI * (1 / 3), Math.min(Math.PI * (1 / 6), targetAngle));
+                targetAngle = Math.max(
+                    -Math.PI * (1 / 3),
+                    Math.min(Math.PI * (1 / 6), targetAngle)
+                );
             } else {
                 if (targetAngle < 0) {
                     targetAngle += 2 * Math.PI;
                 }
-                targetAngle = Math.max(Math.PI * (5 / 6), Math.min(Math.PI * (4 / 3), targetAngle));
+                targetAngle = Math.max(
+                    Math.PI * (5 / 6),
+                    Math.min(Math.PI * (4 / 3), targetAngle)
+                );
             }
 
-            this.InitialAngle = targetAngle - CarminSikleProj.FIRSTHALFSWING * CarminSikleProj.SWINGRANGE * proj.spriteDirection;
+            this.InitialAngle =
+                targetAngle -
+                CarminSikleProj.FIRSTHALFSWING *
+                    CarminSikleProj.SWINGRANGE *
+                    proj.spriteDirection;
         }
     }
 
@@ -423,7 +475,9 @@ export class CorruptionSikleProj extends ModProjectile {
             return;
         }
 
-        let attackSpeed = owner.GetTotalAttackSpeed ? owner.GetTotalAttackSpeed(proj.DamageType) : 1;
+        let attackSpeed = owner.GetTotalAttackSpeed
+            ? owner.GetTotalAttackSpeed(proj.DamageType)
+            : 1;
         let prepTime = 12 / attackSpeed;
         let execTime = 12 / attackSpeed;
         let hideTime = 12 / attackSpeed;
@@ -445,7 +499,10 @@ export class CorruptionSikleProj extends ModProjectile {
     }
 
     PrepareStrike(prepTime) {
-        this.Progress = CarminSikleProj.WINDUP * CarminSikleProj.SWINGRANGE * (1 - this.Timer / prepTime);
+        this.Progress =
+            CarminSikleProj.WINDUP *
+            CarminSikleProj.SWINGRANGE *
+            (1 - this.Timer / prepTime);
 
         let t = this.Timer / prepTime;
         this.Size = t * t * (3 - 2 * t);
@@ -466,7 +523,9 @@ export class CorruptionSikleProj extends ModProjectile {
                 this.Timer = 0;
             }
         } else {
-            let t = (1 - CarminSikleProj.UNWIND / 2) * (this.Timer / (execTime * CarminSikleProj.SPINTIME));
+            let t =
+                (1 - CarminSikleProj.UNWIND / 2) *
+                (this.Timer / (execTime * CarminSikleProj.SPINTIME));
             this.Progress = t * t * (3 - 2 * t) * CarminSikleProj.SPINRANGE;
 
             if (this.Timer >= execTime * CarminSikleProj.SPINTIME) {
@@ -478,24 +537,30 @@ export class CorruptionSikleProj extends ModProjectile {
 
     UnwindStrike(projectile, hideTime) {
         if (this.CurrentAttack === 0) {
-            let t = (1 - CarminSikleProj.UNWIND) + (CarminSikleProj.UNWIND * this.Timer / hideTime);
+            let t =
+                1 -
+                CarminSikleProj.UNWIND +
+                (CarminSikleProj.UNWIND * this.Timer) / hideTime;
             let smoothProgress = t * t * (3 - 2 * t);
             this.Progress = CarminSikleProj.SWINGRANGE * smoothProgress;
 
             let sizeT = this.Timer / hideTime;
-            this.Size = 1 - (sizeT * sizeT * (3 - 2 * sizeT));
+            this.Size = 1 - sizeT * sizeT * (3 - 2 * sizeT);
 
             if (this.Timer >= hideTime) {
                 projectile.Kill();
             }
         } else {
-            let spinHideTime = hideTime * CarminSikleProj.SPINTIME / 2;
-            let t = (1 - CarminSikleProj.UNWIND / 2) + ((CarminSikleProj.UNWIND / 2) * this.Timer / spinHideTime);
+            let spinHideTime = (hideTime * CarminSikleProj.SPINTIME) / 2;
+            let t =
+                1 -
+                CarminSikleProj.UNWIND / 2 +
+                ((CarminSikleProj.UNWIND / 2) * this.Timer) / spinHideTime;
             let smoothProgress = t * t * (3 - 2 * t);
             this.Progress = CarminSikleProj.SPINRANGE * smoothProgress;
 
             let sizeT = this.Timer / spinHideTime;
-            this.Size = 1 - (sizeT * sizeT * (3 - 2 * sizeT));
+            this.Size = 1 - sizeT * sizeT * (3 - 2 * sizeT);
 
             if (this.Timer >= spinHideTime) {
                 projectile.Kill();
@@ -504,15 +569,23 @@ export class CorruptionSikleProj extends ModProjectile {
     }
 
     SetSwordPosition(owner, proj) {
-        proj.rotation = this.InitialAngle + proj.spriteDirection * this.Progress;
+        proj.rotation =
+            this.InitialAngle + proj.spriteDirection * this.Progress;
 
-        let armAngle = proj.rotation - (Math.PI / 2);
+        let armAngle = proj.rotation - Math.PI / 2;
 
         if (owner.SetCompositeArmFront) {
-            owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, armAngle);
+            owner.SetCompositeArmFront(
+                true,
+                Player.CompositeArmStretchAmount.Full,
+                armAngle
+            );
         }
 
-        let armPosition = owner.GetFrontHandPosition(Player.CompositeArmStretchAmount.Full, armAngle);
+        let armPosition = owner.GetFrontHandPosition(
+            Player.CompositeArmStretchAmount.Full,
+            armAngle
+        );
 
         if (owner.gravDir === -1) {
             proj.rotation = -proj.rotation;
@@ -521,7 +594,8 @@ export class CorruptionSikleProj extends ModProjectile {
 
         armPosition.Y += owner.gfxOffY;
         proj.Center = armPosition;
-        proj.scale = this.Size * 0.7 * owner.GetAdjustedItemScale(owner.HeldItem);
+        proj.scale =
+            this.Size * 0.7 * owner.GetAdjustedItemScale(owner.HeldItem);
         owner.heldProj = proj.whoAmI;
     }
 
@@ -542,7 +616,10 @@ export class CorruptionSikleProj extends ModProjectile {
             effects = SpriteEffects.FlipHorizontally;
         }
 
-        let maxRange = (this.CurrentAttack === 1) ? CarminSikleProj.SPINRANGE : CarminSikleProj.SWINGRANGE;
+        let maxRange =
+            this.CurrentAttack === 1
+                ? CarminSikleProj.SPINRANGE
+                : CarminSikleProj.SWINGRANGE;
         let progressFactor = Math.max(0, Math.min(1, this.Progress / maxRange));
 
         let fadeFactor = Math.pow(progressFactor, 4);
@@ -552,10 +629,7 @@ export class CorruptionSikleProj extends ModProjectile {
         let stretchX = 1 + 0.3 * progressFactor;
         let stretchY = 1 - 0.2 * progressFactor;
 
-        let scaleVector = Vector2.new(
-            proj.scale,
-            proj.scale * stretchY
-        );
+        let scaleVector = Vector2.new(proj.scale, proj.scale /* * stretchy*/);
 
         Generic.EntityDraw(
             this.TextureAsset,
@@ -575,10 +649,16 @@ export class CorruptionSikleProj extends ModProjectile {
         // Erro de sintaxe corrigido nesta linha
         if (this.Size < 0.1 || this.CurrentStage !== 1) return;
 
-        let rotationOffset = proj.spriteDirection > 0 ? (45 * Math.PI) / 180 : (135 * Math.PI) / 180;
+        let rotationOffset =
+            proj.spriteDirection > 0
+                ? (45 * Math.PI) / 180
+                : (135 * Math.PI) / 180;
         let visualAngle = proj.rotation + rotationOffset;
 
-        let maxRange = (this.CurrentAttack === 1) ? CarminSikleProj.SPINRANGE : CarminSikleProj.SWINGRANGE;
+        let maxRange =
+            this.CurrentAttack === 1
+                ? CarminSikleProj.SPINRANGE
+                : CarminSikleProj.SWINGRANGE;
         let progressFactor = Math.max(0, Math.min(1, this.Progress / maxRange));
         let stretchX = 1 + 0.3 * progressFactor;
         let textureLength = 132;
@@ -600,7 +680,7 @@ export class CorruptionSikleProj extends ModProjectile {
         hitbox.Width = Math.floor(maxX - minX);
         hitbox.Height = Math.floor(maxY - minY);
     }
-    
+
     // Doesn't Working.
     /*Colliding(proj, projHitbox, targetHitbox) {
         if (this.Size < 0.1 || this.CurrentStage !== 1) return false;
@@ -660,6 +740,29 @@ export class CorruptionSikleProj extends ModProjectile {
         }
 
         return false;
-    }*/ 
+    }*/
     OnKill(proj, timeLeft) {}
+
+    OnHitNPC(proj, target) {
+
+
+for (let i=0;i<2;i++) {
+        Harges.Graphics.UParticle.Spawn(
+            Harges.Assets.Loader.Load("Assets/Adittive/Shine.png"),
+            target.Center,
+            Vector2.Zero,
+            {
+                life: 30,
+                rot: (Math.random() - 0.5) * 2 * Math.PI,
+                scaleTo: Vector2.new(0.04, 0.04),
+                scaleFrom: Vector2.new(0.2, 0.4),
+                colorFrom: Color.Purple,
+                colorTo: Color.Blue,
+                additive: true,
+                layer: 1
+            }
+        );
+}
+        // target: () => Vector2.new(npc.Center.X, npc.Center.Y - 70) });
+    }
 }

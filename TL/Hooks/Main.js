@@ -315,8 +315,7 @@ export class MainHooks {
                 original(self);
             });
         }
-              
-                  
+         
         if (this.HookList.DrawInterface_12_IngameFancyUI) {
             Terraria.Main['void DrawInterface_14_EntityHealthBars()']
             .hook((original, self) => {
