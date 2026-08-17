@@ -2,10 +2,15 @@ import Ease from './Ease.js'
 
 using("Terraria");
 using("Microsoft.Xna.Framework");
+
 const { Vector2, Color } = Modules;
 
 export class HargesMath {
     Ease = Ease;
+    
+    getScreen() {
+    	return Main.screenPosition
+    }
     
     getScreenScale() {
         return Main.screenHeight / 246;

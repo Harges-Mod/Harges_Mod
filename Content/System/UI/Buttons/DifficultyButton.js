@@ -16,11 +16,20 @@ export class DifficultyButton extends BaseButton {
 
         super.AutoLoad(path, frames);
     }
-
-    draw() {
-        const currentPosition = Harges.Math.getCalculatedPosition(this.positionX, this.positionY);
-        this.drawSprite(currentPosition, 1.0, 0.1);
+    
+    onClick() {
+    	
     }
+    
+    draw() {
+        if (!this.preDraw()) return;
+
+        const currentPosition = Harges.Math.getCalculatedPosition(this.positionX, this.positionY);
+        this.drawSprite(currentPosition, {
+            alpha: 1.0
+        });
+    }
+
 }
 
 
@@ -33,7 +42,9 @@ export class ExpandableDifficultyButton extends DifficultyButton {
         this.isVisible = false;
         this.uiLoader = uiLoader;
     }
-
+	
+	
+	
     animate(shouldOpen) {
         if (shouldOpen) {
             this.isVisible = true;
@@ -93,11 +104,13 @@ export class ExpandableDifficultyButton extends DifficultyButton {
         } else {
             this.isHovered = false;
         }
-
-        // Mantém o avanço de cooldown individual por botão funcionando
-        this.processCooldown();
+        this.processCooldown(); 
     }
-
+    
+    onClick() {
+    	console.log('Chamando')
+    }
+    
     draw(isDisabledTemplate = false) {
         if (!this.isVisible) return;
         if (!this.preDraw()) return;
@@ -105,6 +118,8 @@ export class ExpandableDifficultyButton extends DifficultyButton {
         const currentPosition = Harges.Math.getCalculatedPosition(this.positionX, this.positionY, this.currentOffsetY);
 
         if (isDisabledTemplate) {
+            if (!this.texture) return;
+
             const blockedColor = Color.Lerp(Color.Transparent, Color.Black, this.animationProgress);
             const origin = Vector2.new(this.texture.Width / 2, this.texture.Height / 2);
 
@@ -117,13 +132,15 @@ export class ExpandableDifficultyButton extends DifficultyButton {
                 blockedColor,
                 0,
                 origin,
-                Harges.Math.getScreenScale(),
+                Harges.Math.getScreenScale() * this.scale,
                 SpriteEffects.None,
                 0.0
             );
             return;
         }
 
-        this.drawSprite(currentPosition, this.animationProgress, 0.0);
+        this.drawSprite(currentPosition, {
+            alpha: this.animationProgress
+        });
     }
 }

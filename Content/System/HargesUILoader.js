@@ -12,7 +12,8 @@ export class HargesUILoader extends ModSystem {
     PostDrawInterface() {
         HargesUILoader.UIs.Call('UpdateAndDraw');
     }
+    
 }
 
 HargesUILoader.UIs.Add(new DifficultyUI());
-// HargesUILoader.UIs.Add(new TarotUI());
+HargesUILoader.UIs.Add(new TarotUI());

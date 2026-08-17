@@ -38,11 +38,15 @@ export class ModSystem {
     
     DrawPostEntity() {}
     
-    
+    Pause() {
+    	return true
+    }
+   
     PostDrawInterface() {}
     
+    
     SendMessage(player, message) {
-        return true;
+        return false;
     }
     
     static SetTimeout(cb, delay) {

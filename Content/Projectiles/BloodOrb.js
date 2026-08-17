@@ -37,12 +37,12 @@ export class BloodOrb extends ModProjectile {
         ai[1]++;
         
         
-        if (ai[0] % 2 == 0) {
+        if (ai[0] % 16 == 0) {
        	Harges.Graphics.UParticleHelper.SimulateMetaBall({
             center: proj.Center,
             baseSizePx: 32,
             color: Harges.Graphics.UParticleHelper.BallColor(Color.Red, Color.Red),
-            count: 2
+            count: 4
         });
         }
         
