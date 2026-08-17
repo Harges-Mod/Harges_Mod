@@ -12,7 +12,6 @@ export class HargesUILoader extends ModSystem {
     PostDrawInterface() {
         HargesUILoader.UIs.Call('UpdateAndDraw');
     }
-    
 }
 
 HargesUILoader.UIs.Add(new DifficultyUI());

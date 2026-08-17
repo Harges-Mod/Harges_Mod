@@ -105,8 +105,8 @@ export class BaseUI {
     Content() {}
     
     UpdateAndDraw() {
-    	if (this.editor.enabled) this.editor?.Update();
+    	if (this.editor.enabled) this.editor.Update();
         
-    	this.memory?.Call('Update')
+    	this.memory.Call('Update')
     }
 }

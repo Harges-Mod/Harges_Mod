@@ -121,13 +121,6 @@ export class SystemLoader {
         return true;
     }
     
-    static Pause() {
-        if (this.RegisteredSystems.some(s => (s?.Pause() ?? true) === false)) {
-            return false;
-        }
-        return false;
-    }
-    
     static Update(isActive) {
         if (!isActive) return;
         this._tick++;

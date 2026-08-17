@@ -321,21 +321,13 @@ export class MainHooks {
             .hook((original, self) => {
             
                             
-                           
+
+                            SystemLoader.PostDrawInterface()
                             
               original(self)
-                      
-        	
 
             });
         }
-        
-        Main.DrawInfernoRings.hook((orig, self) => {
-        	SystemLoader.PostDrawInterface()
-        	orig(self)
-        })
-
-        	
         if (this.HookList.ApplyColorOfTheSkiesToTiles(info)) {
             Terraria.Main['void ApplyColorOfTheSkiesToTiles()'
             ].hook((original, self) => {
@@ -445,15 +437,6 @@ export class MainHooks {
                 }
             });
         }
-        
-       
-        
-        const CanPauseGame = Main["bool CanPauseGame()"]
-    CanPauseGame.hook((original, self) => {
-    
-    	if (SystemLoader.Pause()) return true
-    	return original(self)
-    });
         
         
         Main.DrawRain.hook((original, self) => {

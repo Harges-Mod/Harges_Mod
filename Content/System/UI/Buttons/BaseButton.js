@@ -1,40 +1,18 @@
-using(
-    "Microsoft.Xna.Framework",
-    "Microsoft.Xna.Framework.Graphics"
-);
+using("Microsoft.Xna.Framework", "Microsoft.Xna.Framework.Graphics");
 
 const { Vector2, Color } = Modules;
 const { Main } = Terraria;
 
-const Draw = Generic.EntityDraw;
-
-const GUIPanel =
-    new NativeClass('', 'GUIPanel');
-
-const PanelLayout =
-    new NativeClass('', 'Panel_Layout');
-
-const LayoutCalculator =
-    new NativeClass('', 'LayoutCalculator');
-
-const RegisterPickingRegion =
-    GUIPanel[
-        'bool RegisterPickingRegion(Panel_Layout layout)'
-    ];
+const GUIPanel = new NativeClass('', 'GUIPanel');
+const PanelLayout = new NativeClass('', 'Panel_Layout');
+const LayoutCalculator = new NativeClass('', 'LayoutCalculator');
+const RegisterPickingRegion = GUIPanel['bool RegisterPickingRegion(Panel_Layout layout)'];
 
 export class BaseButton {
-
-    constructor(
-        positionX,
-        positionY,
-        texturePath = null
-    ) {
+    constructor(positionX, positionY, texturePath = null) {
         this.positionX = positionX;
         this.positionY = positionY;
-
-        this.texturePath =
-            texturePath;
-
+        this.texturePath = texturePath;
         this.texture = null;
 
         this.scale = 1.0;
@@ -47,212 +25,95 @@ export class BaseButton {
         this.touchCooldownFrames = 0;
         this.cooldownLimit = 15;
 
-        this.wasMouseDown = false;
-
-        this.panelLayout =
-            PanelLayout.new();
-
-        this.panelLayout.Anchor =
-            LayoutCalculator.AnchorType.TopLeft;
+        this.panelLayout = PanelLayout.new();
+        this.panelLayout.Anchor = LayoutCalculator.AnchorType.TopLeft;
     }
 
-    AutoLoad(
-        texturePath = null,
-        frameCount = null
-    ) {
-        const path =
-            texturePath ||
-            this.texturePath;
-
-        if (!path)
-            return;
+    AutoLoad(texturePath, frameCount = null) {
+        const path = texturePath || this.texturePath;
+        if (!path) return;
 
         if (frameCount) {
-            this.texture =
-                tl.texture.loadAnimation(
-                    path,
-                    frameCount,
-                    30
-                );
-        }
-        else {
-            this.texture =
-                tl.texture.load(path);
+            this.texture = tl.texture.loadAnimation(path, frameCount, 30);
+        } else {
+            this.texture = tl.texture.load(path);
         }
     }
 
-    registerPickingRegion(
-        originX,
-        originY,
-        width,
-        height
-    ) {
+    registerPickingRegion(originX, originY, width, height) {
         try {
-            this.panelLayout.Location =
-                Vector2.new(
-                    Math.round(originX),
-                    Math.round(originY)
-                );
-
-            this.panelLayout.Size =
-                Vector2.new(
-                    Math.round(width),
-                    Math.round(height)
-                );
-
-            RegisterPickingRegion(
-                this.panelLayout
-            );
-        }
-        catch (_) {}
+            this.panelLayout.Location = Vector2.new(Math.round(originX), Math.round(originY));
+            this.panelLayout.Size = Vector2.new(Math.round(width), Math.round(height));
+            RegisterPickingRegion(this.panelLayout);
+        } catch (_) {}
     }
 
     UpdateHoverState(drawPosition) {
-        if (!this.texture)
-            return false;
+        if (!this.texture) return false;
 
-        const screenScale =
-            Harges.Math.getScreenScale();
+        const screenScale = Harges.Math.getScreenScale();
+        const scale = screenScale * this.scale;
 
-        const totalScale =
-            this.scale *
-            screenScale;
+        const width = this.texture.Width * scale;
+        const height = this.texture.Height * scale;
 
-        const rect =
-            Generic.getRect(
-                this.texture
-            );
+        const originX = drawPosition.X - (width / 2);
+        const originY = drawPosition.Y - (height / 2);
 
-        const frameWidth =
-            rect
-                ? rect.Width
-                : this.texture.Width;
+        const bounds = Microsoft.Xna.Framework.Rectangle.new();
+        bounds.X = Math.round(originX);
+        bounds.Y = Math.round(originY);
+        bounds.Width = Math.round(width);
+        bounds.Height = Math.round(height);
 
-        const frameHeight =
-            rect
-                ? rect.Height
-                : this.texture.Height;
+        this.registerPickingRegion(originX, originY, width, height);
 
-        const scaledWidth =
-            Math.ceil(
-                frameWidth *
-                totalScale
-            );
-
-        const scaledHeight =
-            Math.ceil(
-                frameHeight *
-                totalScale
-            );
-
-        const topLeftX =
-            drawPosition.X -
-            scaledWidth / 2;
-
-        const topLeftY =
-            drawPosition.Y -
-            scaledHeight / 2;
-
-        this.registerPickingRegion(
-            topLeftX,
-            topLeftY,
-            scaledWidth,
-            scaledHeight
+        this.isHovered = bounds['bool Contains(int x, int y)'](
+            Math.round(Main.mouseX),
+            Math.round(Main.mouseY)
         );
-
-        const bounds =
-            Microsoft.Xna.Framework.Rectangle.new();
-
-        bounds.X =
-            Math.round(topLeftX);
-
-        bounds.Y =
-            Math.round(topLeftY);
-
-        bounds.Width =
-            Math.round(scaledWidth);
-
-        bounds.Height =
-            Math.round(scaledHeight);
-
-        this.isHovered =
-            bounds[
-                'bool Contains(int x, int y)'
-            ](
-                Math.round(Main.mouseX),
-                Math.round(Main.mouseY)
-            );
 
         return this.isHovered;
     }
 
     processCooldown() {
-        if (!this.isTouched)
-            return;
+        if (!this.isTouched) return;
 
         this.touchCooldownFrames++;
 
-        if (
-            this.touchCooldownFrames >
-            this.cooldownLimit
-        ) {
+        if (this.touchCooldownFrames > this.cooldownLimit) {
             this.isTouched = false;
             this.touchCooldownFrames = 0;
         }
     }
 
     checkInteraction() {
-        const isMouseDown =
-            Main.mouseLeft;
+        const isMouseDown = Main.mouseLeft;
 
-        const justPressed =
-            isMouseDown &&
-            !this.wasMouseDown;
-
-        if (!isMouseDown) {
-            this.isPressed = false;
-        }
-
-        if (
-            justPressed &&
-            this.isHovered
-        ) {
-            if (!this.isTouched) {
-
+        if (this.isHovered && isMouseDown) {
+            if (!this.isPressed && !this.isTouched) {
                 this.isPressed = true;
                 this.isTouched = true;
-
                 this.touchCooldownFrames = 0;
-
-                this.isActive =
-                    !this.isActive;
+                this.isActive = !this.isActive;
 
                 this.onClick();
-
-                this.wasMouseDown =
-                    isMouseDown;
-
                 return true;
             }
+        } else if (!isMouseDown) {
+            this.isPressed = false;
         }
-
-        this.wasMouseDown =
-            isMouseDown;
 
         return false;
     }
 
     Update() {
-        const currentPosition =
-            Harges.Math.getCalculatedPosition(
-                this.positionX,
-                this.positionY
-            );
-
-        this.UpdateHoverState(
-            currentPosition
+        const currentPosition = Harges.Math.getCalculatedPosition(
+            this.positionX,
+            this.positionY
         );
 
+        this.UpdateHoverState(currentPosition);
         this.checkInteraction();
         this.processCooldown();
     }
@@ -264,68 +125,43 @@ export class BaseButton {
         return true;
     }
 
-    drawSprite(
-        drawPosition,
-        {
-            alpha = 1.0,
-            scale = this.scale,
-            color = Color.White,
-            rotation = 0,
-            layerDepth = 0.1
-        } = {}
-    ) {
-        if (!this.texture)
-            return;
+    drawSprite(drawPosition, alpha = 1.0, layerDepth = 0.0) {
+        if (!this.texture) return;
 
-        const origin =
-            Vector2.new(
-                this.texture.Width / 2,
-                this.texture.Height / 2
-            );
+        const origin = Vector2.new(
+            this.texture.Width / 2,
+            this.texture.Height / 2
+        );
 
-        const drawColor =
-            Color.Lerp(
-                Color.Transparent,
-                color,
-                alpha
-            );
+        const drawColor = Color.Lerp(
+            Color.Transparent,
+            Color.White,
+            alpha
+        );
 
-        const finalScale =
-            scale *
-            Harges.Math.getScreenScale();
-
-        Draw(
+        Main.spriteBatch[
+            "void Draw(Texture2D texture, Vector2 position, Nullable`1 sourceRectangle, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects, float layerDepth)"
+        ](
             this.texture,
             drawPosition,
-            Generic.getRect(
-                this.texture
-            ),
+            null,
             drawColor,
-            rotation,
+            0,
             origin,
-            Vector2.new(
-                finalScale,
-                finalScale
-            ),
-            SpriteEffects.None
+            Harges.Math.getScreenScale() * this.scale,
+            SpriteEffects.None,
+            layerDepth
         );
     }
 
     draw() {
-        if (!this.preDraw())
-            return;
+        if (!this.preDraw()) return;
 
-        const currentPosition =
-            Harges.Math.getCalculatedPosition(
-                this.positionX,
-                this.positionY
-            );
-
-        this.drawSprite(
-            currentPosition,
-            {
-                alpha: 1.0
-            }
+        const currentPosition = Harges.Math.getCalculatedPosition(
+            this.positionX,
+            this.positionY
         );
+
+        this.drawSprite(currentPosition, 1.0, 0.1);
     }
 }
