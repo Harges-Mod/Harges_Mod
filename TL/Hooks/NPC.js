@@ -14,7 +14,8 @@ const { Rectangle, Vector2 } = Modules;
 export class NPCHooks {
     static initialized = false;
     static LoadedTypes = new Set();
-    
+	
+	
     // Here you can disable the hooks that won't be used in your mod to avoid unnecessary processing
     static HookList = {
         All: (info) => info.hasNPCs || info.hasGlobalNPCs || info.hasPlayers,
@@ -125,13 +126,18 @@ export class NPCHooks {
               }
             */
         
+        
+        
+       	
+
+       	
         if (this.HookList.DrawNPCs(info)) {
             Terraria.Main['void DrawNPCs(bool behindTiles)'
             ].hook((original, self, behindTiles) => {
             
                 // Uparticle System
                 
-                
+                // Called
                 original(self, behindTiles);
 
                 let drawNpcs = [];

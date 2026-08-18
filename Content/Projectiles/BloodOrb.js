@@ -1,4 +1,7 @@
 using('Terraria.ID')
+using('Microsoft.Xna.Framework.Graphics')
+using('Terraria')
+using('Microsoft.Xna.Framework')
 
 export class BloodOrb extends ModProjectile {
 
@@ -14,6 +17,8 @@ export class BloodOrb extends ModProjectile {
     
     SetStaticDefaults() {
         this.Orb = tl.texture.load("Textures/Projectiles/BloodOrb.png");  
+        this.target = Microsoft.Xna.Framework.Graphics.RenderTarget2D.new()
+        
         ProjectileID.Sets.TrailCacheLength[this.Type] = 8;
         ProjectileID.Sets.TrailingMode[this.Type] = 0;
     }
@@ -38,12 +43,12 @@ export class BloodOrb extends ModProjectile {
         
         
         if (ai[0] % 2 == 0) {
-       	Harges.Graphics.UParticleHelper.SimulateMetaBall({
+       	/*Harges.Graphics.UParticleHelper.SimulateMetaBall({
             center: proj.Center,
             baseSizePx: 32,
             color: Harges.Graphics.UParticleHelper.BallColor(Color.Red, Color.Red),
             count: 2
-        });
+        });*/
         }
         
         if (ai[0] === 1) {
@@ -112,10 +117,23 @@ export class BloodOrb extends ModProjectile {
         let halfWidth = proj.width / 2;
         let halfHeight = proj.height / 2;
 
-        // Orb principal
+        if (!this.target) {
+            this.target = Microsoft.Xna.Framework.Graphics.RenderTarget2D.new();
+            this.target.device = Main.instance.GraphicsDevice;
+            this.target.width = proj.width;
+            this.target.height = proj.height;
+        }
+        Terraria.Main.spriteBatch.End();
+
+        Main.instance.GraphicsDevice.SetRenderTarget(this.target);
+        Main.instance.GraphicsDevice['void Clear(Color color)'](Color.Transparent);
+
+        Terraria.Main.spriteBatch['void Begin(SpriteSortMode sortMode, BlendState blendState, SamplerState samplerState, DepthStencilState depthStencilState, RasterizerState rasterizerState, Effect effect, Nullable`1 transformMatrix, bool defferedBatch)'
+        ](SpriteSortMode.Deferred, null, null, null, null, null, null, true);
+                    	
         Generic.EntityDraw(
             tex,
-            Generic.toScreenPosition(proj.Center),
+            Vector2.new(halfWidth, halfHeight),
             rect,
             Color.Red,
             proj.rotation,
@@ -124,10 +142,29 @@ export class BloodOrb extends ModProjectile {
             SpriteEffects.None
         );
        
+        Terraria.Main.spriteBatch.End();
+
+        Main.instance.GraphicsDevice.SetRenderTarget(null);
+
+        Terraria.Main.spriteBatch['void Begin(SpriteSortMode sortMode, BlendState blendState, SamplerState samplerState, DepthStencilState depthStencilState, RasterizerState rasterizerState, Effect effect, Nullable`1 transformMatrix, bool defferedBatch)'
+        ](SpriteSortMode.Deferred, null, null, null, null, null, null, true);
         
+        let targetRect = Rectangle.new(0, 0, proj.width, proj.height);
+
+        Generic.EntityDraw(
+            this.target,
+            Generic.toScreenPosition(proj.Center),
+            targetRect,
+            Color.White,
+            0,
+            Vector2.new(halfWidth, halfHeight),
+            Vector2.new(1, 1),
+            SpriteEffects.None
+        );
 
         return false;
     }
+
 
     OnKill(proj, timeLeft) {
         let modPlayer = ModPlayer.getByName('HargesMMode');

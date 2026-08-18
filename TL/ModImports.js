@@ -312,9 +312,9 @@ export const Microsoft = {
             Point: new NativeClass('Microsoft.Xna.Framework', 'Point'),
             Matrix: new NativeClass('Microsoft.Xna.Framework', 'Matrix'),
             MathHelper: new NativeClass('Microsoft.Xna.Framework', 'MathHelper'),
-
             Graphics: {
                 Texture2D: new NativeClass('Microsoft.Xna.Framework.Graphics', 'Texture2D'),
+                RenderTarget2D: new NativeClass('Microsoft.Xna.Framework.Graphics', 'RenderTarget2D'),
                 Color: new NativeClass('Microsoft.Xna.Framework.Graphics', 'Color'),
                 SpriteEffects: new NativeClass('Microsoft.Xna.Framework.Graphics', 'SpriteEffects'),
                 SpriteBatch: new NativeClass('Microsoft.Xna.Framework.Graphics', 'SpriteBatch'),

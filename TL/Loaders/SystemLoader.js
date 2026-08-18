@@ -1,4 +1,4 @@
-import { Terraria } from './../ModImports.js';
+import { Terraria, Microsoft } from './../ModImports.js';
 
 export class SystemLoader {
     static RegisteredSystems = [];
@@ -18,6 +18,8 @@ export class SystemLoader {
         for (const system of this.RegisteredSystems) {
             system?.SetupContent();
         }
+        
+        
     }
     
     static PostSetupContent() {

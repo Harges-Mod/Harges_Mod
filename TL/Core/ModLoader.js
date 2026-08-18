@@ -68,6 +68,8 @@ export class ModLoader extends ModSystem {
         FileManager._path = tl.mod.path.split('/tl_files/')[0] + '/';
         Prototypes.Initialize();
         
+               
+        
         const IntPtr = new NativeClass('System', 'IntPtr');
         tl.device.is32Bits = IntPtr.Size === 4;
         const info = {
@@ -97,7 +99,6 @@ export class ModLoader extends ModSystem {
     
     SetupContent() {
         this.UpdateModData();
-        
         // Loaders
         TileLoader.SetupContent();
         BiomeLoader.SetupContent();
